@@ -1,0 +1,11 @@
+name: ForumAcc
+main: net.kdmdesign.ForumAcc
+version: 1.4
+website: http://www.thekris1234.info
+author: TheKris1234
+commands:
+  account:
+    description: Activates forum account.
+    usage: |
+           To activate your forum account use:
+           /<command> activate - Activate Forum Account

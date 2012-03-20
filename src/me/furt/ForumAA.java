@@ -1,4 +1,4 @@
-package net.kdmdesign;
+package me.furt;
 
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -10,13 +10,13 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
-public class ForumAcc extends JavaPlugin {
+public class ForumAA extends JavaPlugin {
 
 	// Declare sqlQuery
 	private SQLQuery sqlDB = new SQLQuery();
 
 	// Initialise Listener
-	private final ForumAccPlayerListener faPl = new ForumAccPlayerListener(this);
+	private final FAPlayerListener faPl = new FAPlayerListener(this);
 
 	public static Logger log = Logger.getLogger("Minecraft");
 	public static Server server;
@@ -43,16 +43,27 @@ public class ForumAcc extends JavaPlugin {
 		this.sqlDB.password = getConfig().getString("Database.Password");
 		this.sqlDB.tablePref = getConfig().getString("Database.Table_Prefix");
 		this.sqlDB.database = getConfig().getString("Database.Database");
-		if ((!getConfig().getString("Forum.Type").equals(null))
-				&& (!getConfig().getString("Forum.Type").equalsIgnoreCase(
-						"phpbb"))) {
-			if (!getConfig().getString("Forum.Type").equalsIgnoreCase("mybb"))
-				errorMsg = "Not a valid forum type! phpBB or MyBB only!";
-		}
 		this.sqlDB.customField = getConfig().getString(
 				"Optional.Custom_Username_FieldID");
-		this.sqlDB.forumType = getConfig().getString("Forum.Type");
 		this.forumURL = getConfig().getString("Forum.URL");
+
+		if (getConfig().getString("Forum.Type").equalsIgnoreCase("phpbb")) {
+			this.sqlDB.forumType = getConfig().getString("Forum.Type");
+		} else if (getConfig().getString("Forum.Type")
+				.equalsIgnoreCase("mybb")) {
+			this.sqlDB.forumType = getConfig().getString("Forum.Type");
+		} else if (getConfig().getString("Forum.Type")
+				.equalsIgnoreCase("ipb")) {
+			this.sqlDB.forumType = getConfig().getString("Forum.Type");
+		} else if (getConfig().getString("Forum.Type")
+				.equalsIgnoreCase("smf")) {
+			this.sqlDB.forumType = getConfig().getString("Forum.Type");
+		} else if (getConfig().getString("Forum.Type")
+				.equalsIgnoreCase("xenforo")) {
+			this.sqlDB.forumType = getConfig().getString("Forum.Type");
+		} else {
+			errorMsg = "Not a valid forum type!";
+		}
 
 		if (errorMsg == null) {
 			try {

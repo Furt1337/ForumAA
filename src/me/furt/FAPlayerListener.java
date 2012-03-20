@@ -1,16 +1,16 @@
-package net.kdmdesign;
+package me.furt;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class ForumAccPlayerListener implements Listener {
+public class FAPlayerListener implements Listener {
 
-	public static ForumAcc plugin;
+	public static ForumAA plugin;
 	public boolean autoActivate = false;
 
-	public ForumAccPlayerListener(ForumAcc instance) {
+	public FAPlayerListener(ForumAA instance) {
 		plugin = instance;
 	}
 

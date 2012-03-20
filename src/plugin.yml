@@ -1,8 +1,7 @@
-name: ForumAcc
-main: net.kdmdesign.ForumAcc
-version: 1.4
-website: http://www.thekris1234.info
-author: TheKris1234
+name: ForumAA
+main: me.furt.ForumAA
+version: 2.0
+author: TheKris1234, furt
 commands:
   account:
     description: Activates forum account.

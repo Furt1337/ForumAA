@@ -1,4 +1,4 @@
-package net.kdmdesign;
+package me.furt;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -79,18 +79,18 @@ public class SQLQuery {
 				if (rs.next()) {
 					Messaging
 							.sendInfo(
-									ForumAcc.server.getPlayer(user),
+									ForumAA.server.getPlayer(user),
 									"Activated account for "
 											+ rs.getString("username"));
 					updateStats(rs.getInt("user_id"), rs.getString("username"),
 							rs.getString("user_colour"), rs.getInt("group_id"));
 					closeCon();
 				} else {
-					Messaging.sendInfo(ForumAcc.server.getPlayer(user),
+					Messaging.sendInfo(ForumAA.server.getPlayer(user),
 							"Account activated but could not update Stats");
 				}
 			} else {
-				Messaging.sendError(ForumAcc.server.getPlayer(user),
+				Messaging.sendError(ForumAA.server.getPlayer(user),
 						"Username could not be found");
 			}
 		} else {
@@ -108,13 +108,13 @@ public class SQLQuery {
 			ResultSet rs = SELECT(query);
 
 			if (rs.next()) {
-				Messaging.sendInfo(ForumAcc.server.getPlayer(user),
+				Messaging.sendInfo(ForumAA.server.getPlayer(user),
 						"Activated account for " + rs.getString("username"));
 				updateStats(rs.getInt("user_id"), rs.getString("username"),
 						rs.getString("user_colour"), rs.getInt("group_id"));
 				closeCon();
 			} else {
-				Messaging.sendInfo(ForumAcc.server.getPlayer(user),
+				Messaging.sendInfo(ForumAA.server.getPlayer(user),
 						"Account activated but could not update Stats");
 			}
 		}
@@ -168,17 +168,17 @@ public class SQLQuery {
 				if (rs.next()) {
 					Messaging
 							.sendInfo(
-									ForumAcc.server.getPlayer(user),
+									ForumAA.server.getPlayer(user),
 									"Account activated for "
 											+ rs.getString("username"));
 
 				} else {
-					Messaging.sendError(ForumAcc.server.getPlayer(user),
+					Messaging.sendError(ForumAA.server.getPlayer(user),
 							"Your account has not been activated");
 				}
 
 			} else {
-				Messaging.sendError(ForumAcc.server.getPlayer(user),
+				Messaging.sendError(ForumAA.server.getPlayer(user),
 						"Couldn't find your username");
 			}
 		} else {
@@ -192,11 +192,11 @@ public class SQLQuery {
 			ResultSet rs = SELECT(query);
 			closeCon();
 			if (rs.next()) {
-				Messaging.sendInfo(ForumAcc.server.getPlayer(user),
+				Messaging.sendInfo(ForumAA.server.getPlayer(user),
 						"Account activated for " + rs.getString("username"));
 
 			} else {
-				Messaging.sendError(ForumAcc.server.getPlayer(user),
+				Messaging.sendError(ForumAA.server.getPlayer(user),
 						"Your account has not been activated");
 			}
 		}

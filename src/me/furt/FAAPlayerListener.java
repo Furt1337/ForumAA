@@ -5,12 +5,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class FAPlayerListener implements Listener {
+public class FAAPlayerListener implements Listener {
 
 	public static ForumAA plugin;
 	public boolean autoActivate = false;
 
-	public FAPlayerListener(ForumAA instance) {
+	public FAAPlayerListener(ForumAA instance) {
 		plugin = instance;
 	}
 

@@ -6,7 +6,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import java.io.File;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
@@ -16,11 +15,10 @@ public class ForumAA extends JavaPlugin {
 	private SQLQuery sqlDB = new SQLQuery();
 
 	// Initialise Listener
-	private final FAPlayerListener faPl = new FAPlayerListener(this);
+	private final FAAPlayerListener faPl = new FAAPlayerListener(this);
 
 	public static Logger log = Logger.getLogger("Minecraft");
 	public static Server server;
-	File file = new File(getDataFolder(), "config.yml");
 	private String forumURL;
 
 	@Override

@@ -8,7 +8,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 public class FAAPlayerListener implements Listener {
 
 	public static ForumAA plugin;
-	public boolean autoActivate = false;
 
 	public FAAPlayerListener(ForumAA instance) {
 		plugin = instance;
@@ -18,8 +17,8 @@ public class FAAPlayerListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 
 		Player player = event.getPlayer();
-		if (autoActivate) {
-			Messaging.sendInfo(player, "Forum Account Found. Activating...");
+		if (plugin.getConfig().getBoolean("Behaviour.ActivateOnLogin")) {
+			plugin.sendInfo(player, "Forum Account Found. Activating...");
 			plugin.activateUser(player, "login");
 		}
 	}

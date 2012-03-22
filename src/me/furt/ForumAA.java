@@ -1,8 +1,7 @@
 package me.furt;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -11,20 +10,14 @@ import java.util.logging.Logger;
 
 public class ForumAA extends JavaPlugin {
 
-	// Declare sqlQuery
-	private SQLQuery sqlDB = new SQLQuery();
-
-	// Initialise Listener
+	private SQLQuery sqlDB = new SQLQuery(this);
 	private final FAAPlayerListener faPl = new FAAPlayerListener(this);
-
 	public static Logger log = Logger.getLogger("Minecraft");
 	public static Server server;
 	private String forumURL;
 
-	@Override
 	public void onDisable() {
-		// Disable Plugin Message
-		Messaging.logInfo("Disabled");
+		logInfo("Disabled");
 	}
 
 	public void onEnable() {
@@ -33,8 +26,6 @@ public class ForumAA extends JavaPlugin {
 		pm.registerEvents(this.faPl, this);
 		String errorMsg = null;
 		server = getServer();
-		this.faPl.autoActivate = getConfig().getBoolean(
-				"Behaviour.ActivateOnLogin");
 		this.sqlDB.url = getConfig().getString("Database.URL");
 		this.sqlDB.port = getConfig().getString("Database.Port");
 		this.sqlDB.username = getConfig().getString("Database.Username");
@@ -60,7 +51,7 @@ public class ForumAA extends JavaPlugin {
 				.equalsIgnoreCase("xenforo")) {
 			this.sqlDB.forumType = getConfig().getString("Forum.Type");
 		} else {
-			errorMsg = "Not a valid forum type!";
+			errorMsg = getConfig().getString("Forum.Type") + " is not a valid forum type!";
 		}
 
 		if (errorMsg == null) {
@@ -69,56 +60,34 @@ public class ForumAA extends JavaPlugin {
 					if (this.sqlDB.checkTables()) {
 						if (!this.sqlDB.customField.isEmpty()) {
 							if (this.sqlDB.checkCustomColumn()) {
-								Messaging
-										.logInfo("Database connected. Custom Field OK.");
+								logInfo("Database connected. Custom Field OK.");
 								return;
 							}
 
-							Messaging
-									.logInfo("Cannot find custom field. Please check config");
+							logInfo("Cannot find custom field. Please check config");
 							setEnabled(false);
 							return;
 						}
 
-						Messaging.logInfo("Database connected.");
+						logInfo("Database connected.");
 						return;
 					}
 
-					Messaging
-							.logInfo("Could not connect to Users table. Check config.");
+					logInfo("Could not connect to Users table. Check config.");
 					setEnabled(false);
 					return;
 				}
 
-				Messaging.logError("Could not connect to database!");
+				logError("Could not connect to database!");
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
 		} else {
-			Messaging.logError(errorMsg);
+			logError(errorMsg);
 			setEnabled(false);
 		}
-	}
-
-	public boolean onCommand(CommandSender sender, Command command,
-			String commandLabel, String[] args) {
-		if (commandLabel.equalsIgnoreCase("account")) {
-			if (sender instanceof Player) {
-				Player player = (Player) sender;
-
-				if (args.length == 1 && (args[0].equalsIgnoreCase("activate"))) {
-					activateUser(player, "command");
-				} else {
-					return false;
-				}
-
-			}
-		} else {
-			return false;
-		}
-		return true;
 	}
 
 	public void activateUser(Player player, String mode) {
@@ -129,25 +98,31 @@ public class ForumAA extends JavaPlugin {
 				// Check if user is already activated
 				if (!sqlDB.checkActivated(name)) {
 					// Save the user
-					if (sqlDB.forumType.equalsIgnoreCase("phpbb"))
+					if (sqlDB.forumType.equalsIgnoreCase("phpbb")) {
 						sqlDB.savePhpbbUser(name);
-					else
+					} else if (sqlDB.forumType.equalsIgnoreCase("mybb")) {
 						sqlDB.saveMybbUser(name);
+					} else if (sqlDB.forumType.equalsIgnoreCase("xenforo")) {
+						sqlDB.saveXenforoUser(name);
+					} else if (sqlDB.forumType.equalsIgnoreCase("ipb")) {
+						sqlDB.saveIpbUser(name);
+					} else if (sqlDB.forumType.equalsIgnoreCase("smf")) {
+						sqlDB.saveSmfUser(name);
+					}
 				} else {
 					if (!mode.equals("login")) {
-						Messaging
-								.sendError(player, "Account already activated");
+						sendError(player, "Account already activated");
 					}
 				}
 			} else {
-				Messaging.sendError(player, "No account found. Go to "
+				sendError(player, "No account found. Go to "
 						+ forumURL + " to register");
 			}
 		} catch (SQLException e) {
-			Messaging.logError("SQL Error Occurred.");
+			logError("SQL Error Occurred.");
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			Messaging.logError("Could not find SQL Class.");
+			logError("Could not find SQL Class.");
 			e.printStackTrace();
 		}
 	}
@@ -168,5 +143,21 @@ public class ForumAA extends JavaPlugin {
 		getConfig().addDefault("Behaviour.ActivateOnLogin", "false");
 		getConfig().options().copyDefaults(true);
 		saveConfig();
+	}
+	
+	public void sendInfo(Player player, String message) {
+		player.sendMessage(ChatColor.DARK_GREEN + "[ForumAA] " + message);
+	}
+
+	public void sendError(Player player, String message) {
+		player.sendMessage(ChatColor.RED + "[ForumAA] " + message);
+	}
+
+	public void logInfo(String message) {
+		ForumAA.log.info("[ForumAA] " + message);
+	}
+
+	public void logError(String message) {
+		ForumAA.log.severe("[ForumAA] " + message);
 	}
 }

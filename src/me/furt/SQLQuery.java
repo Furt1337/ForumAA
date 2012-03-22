@@ -13,6 +13,11 @@ public class SQLQuery {
 	// Initialise database variables
 	String url, username, password, tablePref, database, query, port,
 			forumType, customField = null;
+	private ForumAA plugin;
+
+	public SQLQuery(ForumAA instance) {
+		this.plugin = instance;
+	}
 
 	public boolean checkTables() throws SQLException, ClassNotFoundException {
 		sqlClass();
@@ -35,8 +40,14 @@ public class SQLQuery {
 		if (forumType.equalsIgnoreCase("phpbb")) {
 			query = "SELECT * FROM " + tablePref
 					+ "profile_fields_data LIMIT 1";
-		} else {
+		} else if (forumType.equalsIgnoreCase("mybb")) {
 			query = "SELECT * FROM " + tablePref + "userfields LIMIT 1";
+		} else if (forumType.equalsIgnoreCase("xenforo")) {
+			// TODO Auto-generated method stub
+		} else if (forumType.equalsIgnoreCase("ipb")) {
+			// TODO Auto-generated method stub
+		} else if (forumType.equalsIgnoreCase("smf")) {
+			// TODO Auto-generated method stub
 		}
 
 		ResultSet rs = SELECT(query);
@@ -48,10 +59,16 @@ public class SQLQuery {
 				if (meta.getColumnName(i).equals("pf_" + customField)) {
 					return true;
 				}
-			} else {
+			} else if (forumType.equalsIgnoreCase("mybb")) {
 				if (meta.getColumnName(i).equals("fid" + customField)) {
 					return true;
 				}
+			} else if (forumType.equalsIgnoreCase("xenforo")) {
+				// TODO Auto-generated method stub
+			} else if (forumType.equalsIgnoreCase("ipb")) {
+				// TODO Auto-generated method stub
+			} else if (forumType.equalsIgnoreCase("smf")) {
+				// TODO Auto-generated method stub
 			}
 		}
 		return false;
@@ -77,20 +94,17 @@ public class SQLQuery {
 
 				rs = SELECT(query);
 				if (rs.next()) {
-					Messaging
-							.sendInfo(
-									ForumAA.server.getPlayer(user),
-									"Activated account for "
-											+ rs.getString("username"));
+					plugin.sendInfo(ForumAA.server.getPlayer(user),
+							"Activated account for " + rs.getString("username"));
 					updateStats(rs.getInt("user_id"), rs.getString("username"),
 							rs.getString("user_colour"), rs.getInt("group_id"));
 					closeCon();
 				} else {
-					Messaging.sendInfo(ForumAA.server.getPlayer(user),
+					plugin.sendInfo(ForumAA.server.getPlayer(user),
 							"Account activated but could not update Stats");
 				}
 			} else {
-				Messaging.sendError(ForumAA.server.getPlayer(user),
+				plugin.sendError(ForumAA.server.getPlayer(user),
 						"Username could not be found");
 			}
 		} else {
@@ -108,13 +122,13 @@ public class SQLQuery {
 			ResultSet rs = SELECT(query);
 
 			if (rs.next()) {
-				Messaging.sendInfo(ForumAA.server.getPlayer(user),
+				plugin.sendInfo(ForumAA.server.getPlayer(user),
 						"Activated account for " + rs.getString("username"));
 				updateStats(rs.getInt("user_id"), rs.getString("username"),
 						rs.getString("user_colour"), rs.getInt("group_id"));
 				closeCon();
 			} else {
-				Messaging.sendInfo(ForumAA.server.getPlayer(user),
+				plugin.sendInfo(ForumAA.server.getPlayer(user),
 						"Account activated but could not update Stats");
 			}
 		}
@@ -166,19 +180,16 @@ public class SQLQuery {
 				rs = SELECT(query);
 				closeCon();
 				if (rs.next()) {
-					Messaging
-							.sendInfo(
-									ForumAA.server.getPlayer(user),
-									"Account activated for "
-											+ rs.getString("username"));
+					plugin.sendInfo(ForumAA.server.getPlayer(user),
+							"Account activated for " + rs.getString("username"));
 
 				} else {
-					Messaging.sendError(ForumAA.server.getPlayer(user),
+					plugin.sendError(ForumAA.server.getPlayer(user),
 							"Your account has not been activated");
 				}
 
 			} else {
-				Messaging.sendError(ForumAA.server.getPlayer(user),
+				plugin.sendError(ForumAA.server.getPlayer(user),
 						"Couldn't find your username");
 			}
 		} else {
@@ -192,14 +203,29 @@ public class SQLQuery {
 			ResultSet rs = SELECT(query);
 			closeCon();
 			if (rs.next()) {
-				Messaging.sendInfo(ForumAA.server.getPlayer(user),
+				plugin.sendInfo(ForumAA.server.getPlayer(user),
 						"Account activated for " + rs.getString("username"));
 
 			} else {
-				Messaging.sendError(ForumAA.server.getPlayer(user),
+				plugin.sendError(ForumAA.server.getPlayer(user),
 						"Your account has not been activated");
 			}
 		}
+	}
+
+	public void saveXenforoUser(String name) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void saveIpbUser(String name) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void saveSmfUser(String name) {
+		// TODO Auto-generated method stub
+
 	}
 
 	public boolean checkExists(String userC) throws SQLException,
@@ -218,11 +244,17 @@ public class SQLQuery {
 						+ "profile_fields_data WHERE pf_" + customField + "='"
 						+ userC + "'";
 			}
-		} else {
+		} else if (forumType.equalsIgnoreCase("mybb")) {
 			if (!customField.isEmpty()) {
 				query = "SELECT * FROM " + tablePref + "userfields WHERE fid"
 						+ customField + "='" + userC + "'";
 			}
+		} else if (forumType.equalsIgnoreCase("xenforo")) {
+			// TODO Auto-generated method stub
+		} else if (forumType.equalsIgnoreCase("ipb")) {
+			// TODO Auto-generated method stub
+		} else if (forumType.equalsIgnoreCase("smf")) {
+			// TODO Auto-generated method stub
 		}
 
 		ResultSet rs = SELECT(query);
@@ -277,7 +309,7 @@ public class SQLQuery {
 					return false;
 				}
 			}
-		} else {
+		} else if (forumType.equalsIgnoreCase("mybb")) {
 			query = "SELECT * FROM " + tablePref + "users WHERE username='"
 					+ userC + "' AND usergroup=2";
 
@@ -301,6 +333,17 @@ public class SQLQuery {
 			} else {
 				return false;
 			}
+		} else if (forumType.equalsIgnoreCase("xenforo")) {
+			// TODO Auto-generated method stub
+			return false;
+		} else if (forumType.equalsIgnoreCase("ipb")) {
+			// TODO Auto-generated method stub
+			return false;
+		} else if (forumType.equalsIgnoreCase("smf")) {
+			// TODO Auto-generated method stub
+			return false;
+		} else {
+			return false;
 		}
 	}
 

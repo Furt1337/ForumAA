@@ -17,7 +17,7 @@ public class FAAPlayerListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 
 		Player player = event.getPlayer();
-		if (plugin.getConfig().getBoolean("Behaviour.ActivateOnLogin")) {
+		if (plugin.getConfig().getBoolean("Optional.ActivateOnLogin")) {
 			plugin.sendInfo(player, "Forum Account Found. Activating...");
 			plugin.activateUser(player, "login");
 		}

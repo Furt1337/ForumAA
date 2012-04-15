@@ -24,6 +24,7 @@ public class ForumAA extends JavaPlugin {
 		checkFiles();
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(this.faPl, this);
+		getCommand("account").setExecutor(new AccountCommand(this));
 		String errorMsg = null;
 		server = getServer();
 		this.sqlDB.url = getConfig().getString("Database.URL");
@@ -140,7 +141,10 @@ public class ForumAA extends JavaPlugin {
 		getConfig().addDefault("Forum.Type", "phpbb");
 		getConfig().addDefault("Forum.URL", "http://forum.myserver.com");
 		getConfig().addDefault("Optional.Custom_Username_FieldID", "");
-		getConfig().addDefault("Behaviour.ActivateOnLogin", "false");
+		getConfig().addDefault("Optional.Promote_User.enable", false);
+		getConfig().addDefault("Optional.Promote_User.Post_Count", "0");
+		getConfig().addDefault("Optional.Promote_User.rank", "Member");
+		getConfig().addDefault("Optional.ActivateOnLogin", "false");
 		getConfig().options().copyDefaults(true);
 		saveConfig();
 	}

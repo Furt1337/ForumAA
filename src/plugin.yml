@@ -5,6 +5,4 @@ author: TheKris1234, furt
 commands:
   account:
     description: Activates forum account.
-    usage: |
-           To activate your forum account use:
-           /<command> activate - Activate Forum Account
+    usage: /<command> activate

@@ -25,6 +25,8 @@ public class SQLQuery {
 		ResultSet tables;
 		if (forumType.equalsIgnoreCase("xenforo")) {
 			tables = dbm.getTables(null, null, tablePref + "user", null);
+		} else if (forumType.equalsIgnoreCase("xenforo")) {
+			tables = dbm.getTables(null, null, tablePref + "members", null);
 		} else {
 			tables = dbm.getTables(null, null, tablePref + "users", null);
 		}
@@ -60,7 +62,15 @@ public class SQLQuery {
 		} else if (forumType.equalsIgnoreCase("ipb")) {
 			// TODO Auto-generated method stub
 		} else if (forumType.equalsIgnoreCase("smf")) {
-			// TODO Auto-generated method stub
+			query = "SELECT * FROM " + tablePref
+					+ "custom_fields WHERE field_name ='" + customField + "'";
+			ResultSet rs = SELECT(query);
+			if (rs != null) {
+				closeCon();
+				return true;
+			}
+			closeCon();
+			return false;
 		}
 
 		ResultSet rs = SELECT(query);
@@ -79,8 +89,6 @@ public class SQLQuery {
 					return true;
 				}
 			} else if (forumType.equalsIgnoreCase("ipb")) {
-				// TODO Auto-generated method stub
-			} else if (forumType.equalsIgnoreCase("smf")) {
 				// TODO Auto-generated method stub
 			}
 		}
@@ -267,7 +275,8 @@ public class SQLQuery {
 			}
 		} else {
 			query = "UPDATE " + tablePref
-					+ "user SET user_state='valid' WHERE username='" + user + "'";
+					+ "user SET user_state='valid' WHERE username='" + user
+					+ "'";
 			UPDATE(query);
 			closeCon();
 
@@ -287,16 +296,80 @@ public class SQLQuery {
 		closeCon();
 	}
 
-	public void saveIpbUser(String user) {
+	public void saveIpbUser(String user) throws ClassNotFoundException,
+			SQLException {
 		// TODO Auto-generated method stub
-		plugin.sendError(ForumAA.server.getPlayer(user),
-				"Your account has not been activated");
+		sqlClass();
+		sqlCon();
+		if (!customField.isEmpty()) {
+
+		} else {
+
+		}
+		closeCon();
 	}
 
-	public void saveSmfUser(String user) {
-		// TODO Auto-generated method stub
-		plugin.sendError(ForumAA.server.getPlayer(user),
-				"Your account has not been activated");
+	public void saveSmfUser(String user) throws ClassNotFoundException,
+			SQLException {
+		sqlClass();
+		sqlCon();
+		if (!customField.isEmpty()) {
+			query = "SELECT id_member FROM " + tablePref
+					+ "themes WHERE variable='" + smfFieldValue() + "' AND value='" + user + "'";
+			ResultSet rs = SELECT(query);
+			if (rs.next()) {
+				query = "UPDATE " + tablePref
+						+ "members SET is_activated='1' WHERE id_member='"
+						+ rs.getInt("id_member") + "'";
+				UPDATE(query);
+				query = "SELECT * FROM " + tablePref + "members WHERE id_member="
+						+ rs.getInt("id_member") + " AND is_activated='1'";
+				rs = SELECT(query);
+				closeCon();
+				if (rs.next()) {
+					plugin.sendInfo(ForumAA.server.getPlayer(user),
+							"Account activated for " + rs.getString("username"));
+
+				} else {
+					plugin.sendError(ForumAA.server.getPlayer(user),
+							"Your account has not been activated");
+				}
+
+			} else {
+				plugin.sendError(ForumAA.server.getPlayer(user),
+						"Couldn't find your username");
+			}
+		} else {
+			query = "UPDATE " + tablePref
+					+ "members SET is_activated='1' WHERE member_name='" + user
+					+ "'";
+			UPDATE(query);
+			closeCon();
+
+			query = "SELECT * FROM " + tablePref + "member WHERE member_name='"
+					+ user + "' AND is_activated='1'";
+			ResultSet rs = SELECT(query);
+			closeCon();
+			if (rs.next()) {
+				plugin.sendInfo(ForumAA.server.getPlayer(user),
+						"Account activated for " + rs.getString("username"));
+
+			} else {
+				plugin.sendError(ForumAA.server.getPlayer(user),
+						"Your account has not been activated");
+			}
+		}
+		closeCon();
+	}
+	
+	private String smfFieldValue() throws ClassNotFoundException, SQLException {
+		sqlClass();
+		sqlCon();
+		query = "SELECT * FROM " + tablePref
+				+ "custom_fields WHERE field_name ='" + customField + "'";
+		ResultSet rs = SELECT(query);
+		closeCon();
+		return rs.getString("col_name");
 	}
 
 	public boolean checkExists(String userC) throws SQLException,
@@ -330,8 +403,13 @@ public class SQLQuery {
 					+ userC + "'";
 		} else if (forumType.equalsIgnoreCase("ipb")) {
 			// TODO Auto-generated method stub
+			
 		} else if (forumType.equalsIgnoreCase("smf")) {
-			// TODO Auto-generated method stub
+			if (!customField.isEmpty()) {
+				query = "SELECT id_member FROM " + tablePref
+						+ "themes WHERE variable='" + smfFieldValue() + "' AND value='" + userC + "'";
+			}
+			query = "SELECT * FROM " + tablePref + "members WHERE member_name='" + userC + "'";
 		}
 
 		ResultSet rs = SELECT(query);
@@ -453,8 +531,43 @@ public class SQLQuery {
 			// TODO Auto-generated method stub
 			return false;
 		} else if (forumType.equalsIgnoreCase("smf")) {
-			// TODO Auto-generated method stub
-			return false;
+			if (!customField.isEmpty()) {
+				query = "SELECT id_member FROM " + tablePref
+						+ "themes WHERE variable='" + smfFieldValue() + "' AND value='" + userC + "'";
+
+				ResultSet rs = SELECT(query);
+
+				if (rs.next()) {
+					query = "SELECT * FROM " + tablePref
+							+ "members WHERE id_member='" + rs.getInt("id_member")
+							+ "' AND is_activated='1'";
+
+					rs = SELECT(query);
+
+					if (rs.next()) {
+						closeCon();
+						return true;
+					} else {
+						closeCon();
+						return false;
+					}
+				} else {
+					return false;
+				}
+			} else {
+
+				query = "SELECT * FROM " + tablePref + "members WHERE member_name='"
+						+ userC + "' AND is_activated='1'";
+				ResultSet rs = SELECT(query);
+
+				if (rs.next()) {
+					closeCon();
+					return true;
+				} else {
+					closeCon();
+					return false;
+				}
+			}
 		} else {
 			return false;
 		}

@@ -34,7 +34,7 @@ public class ForumAA extends JavaPlugin {
 		this.sqlDB.tablePref = getConfig().getString("Database.Table_Prefix");
 		this.sqlDB.database = getConfig().getString("Database.Database");
 		this.sqlDB.customField = getConfig().getString(
-				"Optional.Custom_Username_FieldID");
+				"Optional.Custom_Field_ID");
 		this.forumURL = getConfig().getString("Forum.URL");
 
 		if (getConfig().getString("Forum.Type").equalsIgnoreCase("phpbb")) {
@@ -52,7 +52,8 @@ public class ForumAA extends JavaPlugin {
 				.equalsIgnoreCase("xenforo")) {
 			this.sqlDB.forumType = getConfig().getString("Forum.Type");
 		} else {
-			errorMsg = getConfig().getString("Forum.Type") + " is not a valid forum type!";
+			errorMsg = getConfig().getString("Forum.Type") + " is not a valid forum type! Make sure config.yml is setup properly.";
+			setEnabled(false);
 		}
 
 		if (errorMsg == null) {
@@ -65,7 +66,7 @@ public class ForumAA extends JavaPlugin {
 								return;
 							}
 
-							logInfo("Cannot find custom field. Please check config");
+							logInfo("Cannot find custom field. Make sure config.yml is setup properly.");
 							setEnabled(false);
 							return;
 						}
@@ -74,21 +75,34 @@ public class ForumAA extends JavaPlugin {
 						return;
 					}
 
-					logInfo("Could not connect to Users table. Check config.");
+					logInfo("Could not connect to Users table. Make sure config.yml is setup properly.");
 					setEnabled(false);
 					return;
 				}
-
-				logError("Could not connect to database!");
 			} catch (SQLException e) {
-				e.printStackTrace();
+				logError("Could not connect to database! Make sure config.yml is setup properly.");
+				setEnabled(false);
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+				logError("Could not connect to database! Make sure config.yml is setup properly.");
+				setEnabled(false);
 			}
 		} else {
 			logError(errorMsg);
 			setEnabled(false);
 		}
+	}
+	public boolean checkAccount(Player player) {
+		boolean check = false;
+		try {
+			if (sqlDB.checkExists(player.getName())) {
+				check = true;
+			}
+		} catch (SQLException e) {
+			return check;
+		} catch (ClassNotFoundException e) {
+			return check;
+		}
+		return check;
 	}
 
 	public void activateUser(Player player, String mode) {
@@ -140,11 +154,11 @@ public class ForumAA extends JavaPlugin {
 		getConfig().addDefault("Database.Table_Prefix", "phpbb_");
 		getConfig().addDefault("Forum.Type", "phpbb");
 		getConfig().addDefault("Forum.URL", "http://forum.myserver.com");
-		getConfig().addDefault("Optional.Custom_Username_FieldID", "");
-		getConfig().addDefault("Optional.Promote_User.enable", false);
-		getConfig().addDefault("Optional.Promote_User.Post_Count", "0");
-		getConfig().addDefault("Optional.Promote_User.rank", "Member");
-		getConfig().addDefault("Optional.ActivateOnLogin", "false");
+		getConfig().addDefault("Optional.Custom_Field_ID", "");
+		//getConfig().addDefault("Optional.Promote_User.enable", false);
+		//getConfig().addDefault("Optional.Promote_User.Post_Count", "0");
+		//getConfig().addDefault("Optional.Promote_User.rank", "Member");
+		getConfig().addDefault("Optional.Login_Activation", "false");
 		getConfig().options().copyDefaults(true);
 		saveConfig();
 	}

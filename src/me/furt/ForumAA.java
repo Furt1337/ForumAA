@@ -39,20 +39,18 @@ public class ForumAA extends JavaPlugin {
 
 		if (getConfig().getString("Forum.Type").equalsIgnoreCase("phpbb")) {
 			this.sqlDB.forumType = getConfig().getString("Forum.Type");
-		} else if (getConfig().getString("Forum.Type")
-				.equalsIgnoreCase("mybb")) {
+		} else if (getConfig().getString("Forum.Type").equalsIgnoreCase("mybb")) {
 			this.sqlDB.forumType = getConfig().getString("Forum.Type");
-		} else if (getConfig().getString("Forum.Type")
-				.equalsIgnoreCase("ipb")) {
+		} else if (getConfig().getString("Forum.Type").equalsIgnoreCase("ipb")) {
 			this.sqlDB.forumType = getConfig().getString("Forum.Type");
-		} else if (getConfig().getString("Forum.Type")
-				.equalsIgnoreCase("smf")) {
+		} else if (getConfig().getString("Forum.Type").equalsIgnoreCase("smf")) {
 			this.sqlDB.forumType = getConfig().getString("Forum.Type");
-		} else if (getConfig().getString("Forum.Type")
-				.equalsIgnoreCase("xenforo")) {
+		} else if (getConfig().getString("Forum.Type").equalsIgnoreCase(
+				"xenforo")) {
 			this.sqlDB.forumType = getConfig().getString("Forum.Type");
 		} else {
-			errorMsg = getConfig().getString("Forum.Type") + " is not a valid forum type! Make sure config.yml is setup properly.";
+			errorMsg = getConfig().getString("Forum.Type")
+					+ " is not a valid forum type! Make sure config.yml is setup properly.";
 			setEnabled(false);
 		}
 
@@ -91,6 +89,7 @@ public class ForumAA extends JavaPlugin {
 			setEnabled(false);
 		}
 	}
+
 	public boolean checkAccount(Player player) {
 		boolean check = false;
 		try {
@@ -130,8 +129,8 @@ public class ForumAA extends JavaPlugin {
 					}
 				}
 			} else {
-				sendError(player, "No account found. Go to "
-						+ forumURL + " to register");
+				sendError(player, "No account found. Go to " + forumURL
+						+ " to register");
 			}
 		} catch (SQLException e) {
 			logError("SQL Error Occurred.");
@@ -155,14 +154,14 @@ public class ForumAA extends JavaPlugin {
 		getConfig().addDefault("Forum.Type", "phpbb");
 		getConfig().addDefault("Forum.URL", "http://forum.myserver.com");
 		getConfig().addDefault("Optional.Custom_Field_ID", "");
-		//getConfig().addDefault("Optional.Promote_User.enable", false);
-		//getConfig().addDefault("Optional.Promote_User.Post_Count", "0");
-		//getConfig().addDefault("Optional.Promote_User.rank", "Member");
+		// getConfig().addDefault("Optional.Promote_User.enable", false);
+		// getConfig().addDefault("Optional.Promote_User.Post_Count", "0");
+		// getConfig().addDefault("Optional.Promote_User.rank", "Member");
 		getConfig().addDefault("Optional.Login_Activation", "false");
 		getConfig().options().copyDefaults(true);
 		saveConfig();
 	}
-	
+
 	public void sendInfo(Player player, String message) {
 		player.sendMessage(ChatColor.DARK_GREEN + "[ForumAA] " + message);
 	}

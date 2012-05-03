@@ -25,5 +25,4 @@ public class AccountCommand implements CommandExecutor {
 		}
 		return false;
 	}
-
 }

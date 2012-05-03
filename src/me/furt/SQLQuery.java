@@ -25,7 +25,8 @@ public class SQLQuery {
 		ResultSet tables;
 		if (forumType.equalsIgnoreCase("xenforo")) {
 			tables = dbm.getTables(null, null, tablePref + "user", null);
-		} else if (forumType.equalsIgnoreCase("xenforo") || forumType.equalsIgnoreCase("ipb")) {
+		} else if (forumType.equalsIgnoreCase("xenforo")
+				|| forumType.equalsIgnoreCase("ipb")) {
 			tables = dbm.getTables(null, null, tablePref + "members", null);
 		} else {
 			tables = dbm.getTables(null, null, tablePref + "users", null);
@@ -305,7 +306,8 @@ public class SQLQuery {
 		sqlCon();
 		if (!customField.isEmpty()) {
 			query = "SELECT member_id FROM " + tablePref
-					+ "pfields_content WHERE field_" + customField +" ='" + user + "'";
+					+ "pfields_content WHERE field_" + customField + " ='"
+					+ user + "'";
 			ResultSet rs = SELECT(query);
 			if (rs.next()) {
 				query = "UPDATE " + tablePref
@@ -315,13 +317,16 @@ public class SQLQuery {
 				/**
 				 * 
 				 */
-				query = "SELECT * FROM " + tablePref + "members WHERE member_group_id='3' AND member_id="
+				query = "SELECT * FROM " + tablePref
+						+ "members WHERE member_group_id='3' AND member_id="
 						+ rs.getInt("member_id");
 				rs = SELECT(query);
 				closeCon();
 				if (rs.next()) {
-					plugin.sendInfo(ForumAA.server.getPlayer(user),
-							"Account activated for " + rs.getString("members_display_name"));
+					plugin.sendInfo(
+							ForumAA.server.getPlayer(user),
+							"Account activated for "
+									+ rs.getString("members_display_name"));
 				} else {
 					plugin.sendError(ForumAA.server.getPlayer(user),
 							"Your account has not been activated");
@@ -332,20 +337,24 @@ public class SQLQuery {
 						"Couldn't find your username");
 			}
 		} else {
-			query = "UPDATE " + tablePref
+			query = "UPDATE "
+					+ tablePref
 					+ "members SET member_group_id ='3' WHERE members_display_name='"
 					+ user + "'";
 			UPDATE(query);
 			/**
 			 * 
 			 */
-			query = "SELECT * FROM " + tablePref + "members WHERE members_display_name='"
-					+ user + "' AND member_group_id='3'";
+			query = "SELECT * FROM " + tablePref
+					+ "members WHERE members_display_name='" + user
+					+ "' AND member_group_id='3'";
 			ResultSet rs = SELECT(query);
 			closeCon();
 			if (rs.next()) {
-				plugin.sendInfo(ForumAA.server.getPlayer(user),
-						"Account activated for " + rs.getString("members_display_name"));
+				plugin.sendInfo(
+						ForumAA.server.getPlayer(user),
+						"Account activated for "
+								+ rs.getString("members_display_name"));
 
 			} else {
 				plugin.sendError(ForumAA.server.getPlayer(user),
@@ -361,15 +370,17 @@ public class SQLQuery {
 		sqlCon();
 		if (!customField.isEmpty()) {
 			query = "SELECT id_member FROM " + tablePref
-					+ "themes WHERE variable='" + smfFieldValue() + "' AND value='" + user + "'";
+					+ "themes WHERE variable='" + smfFieldValue()
+					+ "' AND value='" + user + "'";
 			ResultSet rs = SELECT(query);
 			if (rs.next()) {
 				query = "UPDATE " + tablePref
 						+ "members SET is_activated='1' WHERE id_member='"
 						+ rs.getInt("id_member") + "'";
 				UPDATE(query);
-				query = "SELECT * FROM " + tablePref + "members WHERE id_member="
-						+ rs.getInt("id_member") + " AND is_activated='1'";
+				query = "SELECT * FROM " + tablePref
+						+ "members WHERE id_member=" + rs.getInt("id_member")
+						+ " AND is_activated='1'";
 				rs = SELECT(query);
 				closeCon();
 				if (rs.next()) {
@@ -407,7 +418,7 @@ public class SQLQuery {
 		}
 		closeCon();
 	}
-	
+
 	private String smfFieldValue() throws ClassNotFoundException, SQLException {
 		sqlClass();
 		sqlCon();
@@ -420,25 +431,23 @@ public class SQLQuery {
 
 	public boolean checkExists(String userC) throws SQLException,
 			ClassNotFoundException {
-
 		sqlClass();
 		sqlCon();
-
-		// Default query for myBB and phpBB
-		query = "SELECT * FROM " + tablePref + "users WHERE username='" + userC
-				+ "'";
-
 		if (forumType.equalsIgnoreCase("phpbb")) {
 			if (!customField.isEmpty()) {
 				query = "SELECT * FROM " + tablePref
 						+ "profile_fields_data WHERE pf_" + customField + "='"
 						+ userC + "'";
 			}
+			query = "SELECT * FROM " + tablePref + "users WHERE username='" + userC
+					+ "'";
 		} else if (forumType.equalsIgnoreCase("mybb")) {
 			if (!customField.isEmpty()) {
 				query = "SELECT * FROM " + tablePref + "userfields WHERE fid"
 						+ customField + "='" + userC + "'";
 			}
+			query = "SELECT * FROM " + tablePref + "users WHERE username='" + userC
+					+ "'";
 		} else if (forumType.equalsIgnoreCase("xenforo")) {
 			if (!customField.isEmpty()) {
 				query = "SELECT * FROM " + tablePref
@@ -448,20 +457,21 @@ public class SQLQuery {
 			query = "SELECT * FROM " + tablePref + "user WHERE username='"
 					+ userC + "'";
 		} else if (forumType.equalsIgnoreCase("ipb")) {
-			// TODO Auto-generated method stub
 			if (!customField.isEmpty()) {
 				query = "SELECT * FROM " + tablePref
-						+ "pfields_content WHERE field_" + customField
-						+ " ='" + userC + "'";
+						+ "pfields_content WHERE field_" + customField + " ='"
+						+ userC + "'";
 			}
-			query = "SELECT * FROM " + tablePref + "members WHERE members_display_name='"
-					+ userC + "'";
+			query = "SELECT * FROM " + tablePref
+					+ "members WHERE members_display_name='" + userC + "'";
 		} else if (forumType.equalsIgnoreCase("smf")) {
 			if (!customField.isEmpty()) {
 				query = "SELECT id_member FROM " + tablePref
-						+ "themes WHERE variable='" + smfFieldValue() + "' AND value='" + userC + "'";
+						+ "themes WHERE variable='" + smfFieldValue()
+						+ "' AND value='" + userC + "'";
 			}
-			query = "SELECT * FROM " + tablePref + "members WHERE member_name='" + userC + "'";
+			query = "SELECT * FROM " + tablePref
+					+ "members WHERE member_name='" + userC + "'";
 		}
 
 		ResultSet rs = SELECT(query);
@@ -580,17 +590,20 @@ public class SQLQuery {
 				}
 			}
 		} else if (forumType.equalsIgnoreCase("ipb")) {
-			query = "SELECT * FROM " + tablePref + "members WHERE members_display_name='"
-					+ userC + "' AND member_group_id=3";
+			query = "SELECT * FROM " + tablePref
+					+ "members WHERE members_display_name='" + userC
+					+ "' AND member_group_id=3";
 
 			if (!customField.isEmpty()) {
 				query = "SELECT member_id FROM " + tablePref
-						+ "pfields_content WHERE field_" + customField + "='" + userC
-						+ "'";
+						+ "pfields_content WHERE field_" + customField + "='"
+						+ userC + "'";
 				ResultSet rs = SELECT(query);
 				if (rs.next()) {
-					query = "SELECT * FROM " + tablePref + "members WHERE member_id='"
-							+ rs.getInt("member_id") + "' AND member_group_id = '3'";
+					query = "SELECT * FROM " + tablePref
+							+ "members WHERE member_id='"
+							+ rs.getInt("member_id")
+							+ "' AND member_group_id = '3'";
 				} else {
 					return false;
 				}
@@ -606,14 +619,15 @@ public class SQLQuery {
 		} else if (forumType.equalsIgnoreCase("smf")) {
 			if (!customField.isEmpty()) {
 				query = "SELECT id_member FROM " + tablePref
-						+ "themes WHERE variable='" + smfFieldValue() + "' AND value='" + userC + "'";
+						+ "themes WHERE variable='" + smfFieldValue()
+						+ "' AND value='" + userC + "'";
 
 				ResultSet rs = SELECT(query);
 
 				if (rs.next()) {
 					query = "SELECT * FROM " + tablePref
-							+ "members WHERE id_member='" + rs.getInt("id_member")
-							+ "' AND is_activated='1'";
+							+ "members WHERE id_member='"
+							+ rs.getInt("id_member") + "' AND is_activated='1'";
 
 					rs = SELECT(query);
 
@@ -629,8 +643,9 @@ public class SQLQuery {
 				}
 			} else {
 
-				query = "SELECT * FROM " + tablePref + "members WHERE member_name='"
-						+ userC + "' AND is_activated='1'";
+				query = "SELECT * FROM " + tablePref
+						+ "members WHERE member_name='" + userC
+						+ "' AND is_activated='1'";
 				ResultSet rs = SELECT(query);
 
 				if (rs.next()) {

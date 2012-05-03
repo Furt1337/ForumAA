@@ -25,7 +25,7 @@ public class SQLQuery {
 		ResultSet tables;
 		if (forumType.equalsIgnoreCase("xenforo")) {
 			tables = dbm.getTables(null, null, tablePref + "user", null);
-		} else if (forumType.equalsIgnoreCase("xenforo")) {
+		} else if (forumType.equalsIgnoreCase("xenforo") || forumType.equalsIgnoreCase("ipb")) {
 			tables = dbm.getTables(null, null, tablePref + "members", null);
 		} else {
 			tables = dbm.getTables(null, null, tablePref + "users", null);
@@ -60,7 +60,7 @@ public class SQLQuery {
 			closeCon();
 			return false;
 		} else if (forumType.equalsIgnoreCase("ipb")) {
-			// TODO Auto-generated method stub
+			query = "SELECT * FROM " + tablePref + "pfields_data";
 		} else if (forumType.equalsIgnoreCase("smf")) {
 			query = "SELECT * FROM " + tablePref
 					+ "custom_fields WHERE field_name ='" + customField + "'";
@@ -89,7 +89,10 @@ public class SQLQuery {
 					return true;
 				}
 			} else if (forumType.equalsIgnoreCase("ipb")) {
-				// TODO Auto-generated method stub
+				if (meta.getColumnName(i).equals("field_" + customField)) {
+					closeCon();
+					return true;
+				}
 			}
 		}
 		closeCon();
@@ -298,13 +301,56 @@ public class SQLQuery {
 
 	public void saveIpbUser(String user) throws ClassNotFoundException,
 			SQLException {
-		// TODO Auto-generated method stub
 		sqlClass();
 		sqlCon();
 		if (!customField.isEmpty()) {
+			query = "SELECT member_id FROM " + tablePref
+					+ "pfields_content WHERE field_" + customField +" ='" + user + "'";
+			ResultSet rs = SELECT(query);
+			if (rs.next()) {
+				query = "UPDATE " + tablePref
+						+ "members SET member_group_id ='3' WHERE member_id='"
+						+ rs.getInt("member_id") + "'";
+				UPDATE(query);
+				/**
+				 * 
+				 */
+				query = "SELECT * FROM " + tablePref + "members WHERE member_group_id='3' AND member_id="
+						+ rs.getInt("member_id");
+				rs = SELECT(query);
+				closeCon();
+				if (rs.next()) {
+					plugin.sendInfo(ForumAA.server.getPlayer(user),
+							"Account activated for " + rs.getString("members_display_name"));
+				} else {
+					plugin.sendError(ForumAA.server.getPlayer(user),
+							"Your account has not been activated");
+				}
 
+			} else {
+				plugin.sendError(ForumAA.server.getPlayer(user),
+						"Couldn't find your username");
+			}
 		} else {
+			query = "UPDATE " + tablePref
+					+ "members SET member_group_id ='3' WHERE members_display_name='"
+					+ user + "'";
+			UPDATE(query);
+			/**
+			 * 
+			 */
+			query = "SELECT * FROM " + tablePref + "members WHERE members_display_name='"
+					+ user + "' AND member_group_id='3'";
+			ResultSet rs = SELECT(query);
+			closeCon();
+			if (rs.next()) {
+				plugin.sendInfo(ForumAA.server.getPlayer(user),
+						"Account activated for " + rs.getString("members_display_name"));
 
+			} else {
+				plugin.sendError(ForumAA.server.getPlayer(user),
+						"Your account has not been activated");
+			}
 		}
 		closeCon();
 	}
@@ -403,7 +449,13 @@ public class SQLQuery {
 					+ userC + "'";
 		} else if (forumType.equalsIgnoreCase("ipb")) {
 			// TODO Auto-generated method stub
-			
+			if (!customField.isEmpty()) {
+				query = "SELECT * FROM " + tablePref
+						+ "pfields_content WHERE field_" + customField
+						+ " ='" + userC + "'";
+			}
+			query = "SELECT * FROM " + tablePref + "members WHERE members_display_name='"
+					+ userC + "'";
 		} else if (forumType.equalsIgnoreCase("smf")) {
 			if (!customField.isEmpty()) {
 				query = "SELECT id_member FROM " + tablePref
@@ -528,8 +580,29 @@ public class SQLQuery {
 				}
 			}
 		} else if (forumType.equalsIgnoreCase("ipb")) {
-			// TODO Auto-generated method stub
-			return false;
+			query = "SELECT * FROM " + tablePref + "members WHERE members_display_name='"
+					+ userC + "' AND member_group_id=3";
+
+			if (!customField.isEmpty()) {
+				query = "SELECT member_id FROM " + tablePref
+						+ "pfields_content WHERE field_" + customField + "='" + userC
+						+ "'";
+				ResultSet rs = SELECT(query);
+				if (rs.next()) {
+					query = "SELECT * FROM " + tablePref + "members WHERE member_id='"
+							+ rs.getInt("member_id") + "' AND member_group_id = '3'";
+				} else {
+					return false;
+				}
+			}
+
+			ResultSet rs = SELECT(query);
+			closeCon();
+			if (rs.next()) {
+				return true;
+			} else {
+				return false;
+			}
 		} else if (forumType.equalsIgnoreCase("smf")) {
 			if (!customField.isEmpty()) {
 				query = "SELECT id_member FROM " + tablePref

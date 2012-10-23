@@ -27,6 +27,7 @@ public class ForumAA extends JavaPlugin {
 		getCommand("account").setExecutor(new AccountCommand(this));
 		String errorMsg = null;
 		server = getServer();
+		sqlDB.start();
 		this.sqlDB.url = getConfig().getString("Database.URL");
 		this.sqlDB.port = getConfig().getString("Database.Port");
 		this.sqlDB.username = getConfig().getString("Database.Username");

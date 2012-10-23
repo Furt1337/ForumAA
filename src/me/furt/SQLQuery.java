@@ -8,7 +8,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class SQLQuery {
+public class SQLQuery extends Thread {
 
 	// Initialize database variables
 	String url, username, password, tablePref, database, query, port,
@@ -25,7 +25,7 @@ public class SQLQuery {
 		ResultSet tables;
 		if (forumType.equalsIgnoreCase("xenforo")) {
 			tables = dbm.getTables(null, null, tablePref + "user", null);
-		} else if (forumType.equalsIgnoreCase("xenforo")
+		} else if (forumType.equalsIgnoreCase("smf")
 				|| forumType.equalsIgnoreCase("ipb")) {
 			tables = dbm.getTables(null, null, tablePref + "members", null);
 		} else {
@@ -528,7 +528,7 @@ public class SQLQuery {
 			}
 		} else if (forumType.equalsIgnoreCase("mybb")) {
 			query = "SELECT * FROM " + tablePref + "users WHERE username='"
-					+ userC + "' AND usergroup=2";
+					+ userC + "' AND usergroup = '2'";
 
 			if (!customField.isEmpty()) {
 				query = "SELECT ufid FROM " + tablePref
@@ -591,7 +591,7 @@ public class SQLQuery {
 			}
 		} else if (forumType.equalsIgnoreCase("ipb")) {
 			query = "SELECT * FROM " + tablePref
-					+ "members WHERE members_display_name='" + userC
+					+ "members WHERE members_display_name = '" + userC
 					+ "' AND member_group_id=3";
 
 			if (!customField.isEmpty()) {
@@ -601,7 +601,7 @@ public class SQLQuery {
 				ResultSet rs = SELECT(query);
 				if (rs.next()) {
 					query = "SELECT * FROM " + tablePref
-							+ "members WHERE member_id='"
+							+ "members WHERE member_id = '"
 							+ rs.getInt("member_id")
 							+ "' AND member_group_id = '3'";
 				} else {

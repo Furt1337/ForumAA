@@ -1,4 +1,4 @@
-package me.furt;
+package me.furt.forumaa;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -8,7 +8,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class SQLQuery extends Thread {
+public class SQLQuery {
 
 	// Initialize database variables
 	String url, username, password, tablePref, database, query, port,

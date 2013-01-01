@@ -1,4 +1,4 @@
-package me.furt;
+package me.furt.forumaa;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -27,7 +27,6 @@ public class ForumAA extends JavaPlugin {
 		getCommand("account").setExecutor(new AccountCommand(this));
 		String errorMsg = null;
 		server = getServer();
-		sqlDB.start();
 		this.sqlDB.url = getConfig().getString("Database.URL");
 		this.sqlDB.port = getConfig().getString("Database.Port");
 		this.sqlDB.username = getConfig().getString("Database.Username");

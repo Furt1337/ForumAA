@@ -1,15 +1,63 @@
-# Eclipse stuff
-/.settings
+# Compiled source #
+###################
+bin
+lib
+out
+target
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
 
-# netbeans
-/nbproject
+# Git #
+#######
+.git
 
-# maven
-/target
+# Packages #
+############
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
 
-# ant
-/bin
-/dist
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
 
-# vim
-.*.sw[a-p]
+# OS generated files #
+######################
+.DS_Store
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# Project files #
+#################
+.classpath
+.externalToolBuilders
+.project
+.settings
+MANIFEST.MF
+
+# Netbeans files #
+##################
+build
+dist
+nbproject
+build.xml
+nb-configuration.xml
+
+# IntelliJ IDEA files #
+#######################
+.idea
+*.iml
+*.ipr
+*.iws

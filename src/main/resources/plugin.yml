@@ -1,6 +1,6 @@
 name: ForumAA
-main: me.furt.ForumAA
-version: 2.2
+main: me.furt.forumaa.ForumAA
+version: 3.0.0
 author: TheKris1234, furt
 commands:
   account:

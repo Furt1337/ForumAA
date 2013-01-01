@@ -1,4 +1,4 @@
-package me.furt;
+package me.furt.forumaa;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

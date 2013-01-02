@@ -16,12 +16,20 @@ public class FAAPlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
 		if (plugin.getConfig().getBoolean("Optional.Login_Activation")) {
-			if (plugin.checkAccount(player))
-				plugin.sendInfo(player, "Forum Account Found. Activating...");
-			plugin.activateUser(player, "login");
-		}
-	}
 
+			plugin.getServer().getScheduler()
+					.runTaskAsynchronously(plugin, new Runnable() {
+						public void run() {
+							if (plugin.checkAccount(player)) {
+								plugin.sendInfo(player,
+										"Forum Account Found. Activating...");
+								plugin.activateUser(player, "login");
+							}
+						}
+					});
+		}
+
+	}
 }

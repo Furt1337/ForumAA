@@ -17,9 +17,15 @@ public class AccountCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
 		if (sender instanceof Player) {
-			Player player = (Player) sender;
+			final Player player = (Player) sender;
 			if (args.length == 1 && (args[0].equalsIgnoreCase("activate"))) {
-				plugin.activateUser(player, "command");
+				plugin.getServer().getScheduler()
+						.runTaskAsynchronously(plugin, new Runnable() {
+							public void run() {
+								plugin.activateUser(player, "command");
+							}
+
+						});
 				return true;
 			}
 		}

@@ -5,7 +5,11 @@ import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.Metrics;
+
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ForumAA extends JavaPlugin {
@@ -87,6 +91,13 @@ public class ForumAA extends JavaPlugin {
 		} else {
 			logError(errorMsg);
 			setEnabled(false);
+		}
+		
+		try {
+		    Metrics metrics = new Metrics(this);
+		    metrics.start();
+		} catch (IOException e) {
+		   this.getLogger().log(Level.WARNING, "PluginMetrics could not start.");
 		}
 	}
 

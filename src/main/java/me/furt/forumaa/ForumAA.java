@@ -9,6 +9,8 @@ import org.mcstats.Metrics;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 public class ForumAA extends JavaPlugin {
@@ -153,6 +155,9 @@ public class ForumAA extends JavaPlugin {
 		if (!getDataFolder().exists()) {
 			getDataFolder().mkdirs();
 		}
+		List<String> commands = new ArrayList<String>();
+		commands.add("say &4%p &9has successfully activated there forum account!");
+		commands.add("say Just another test command!");
 		getConfig().addDefault("Database.URL", "localhost");
 		getConfig().addDefault("Database.Port", "3306");
 		getConfig().addDefault("Database.Username", "root");
@@ -162,7 +167,7 @@ public class ForumAA extends JavaPlugin {
 		getConfig().addDefault("Forum.Type", "phpbb");
 		getConfig().addDefault("Forum.URL", "http://forum.myserver.com");
 		getConfig().addDefault("Optional.Custom_Field_ID", "");
-		getConfig().addDefault("Optional.activation_commands", "null");
+		getConfig().addDefault("Optional.activation_commands", commands);
 		getConfig().addDefault("Optional.Login_Activation", "false");
 		getConfig().options().copyDefaults(true);
 		saveConfig();
@@ -183,9 +188,35 @@ public class ForumAA extends JavaPlugin {
 	public void logError(String message) {
 		this.getLogger().warning(message);
 	}
+	
+	public String colorizeText(String string) {
+		string = string.replaceAll("&0", "§0");
+		string = string.replaceAll("&1", "§1");
+		string = string.replaceAll("&2", "§2");
+		string = string.replaceAll("&3", "§3");
+		string = string.replaceAll("&4", "§4");
+		string = string.replaceAll("&5", "§5");
+		string = string.replaceAll("&6", "§6");
+		string = string.replaceAll("&7", "§7");
+		string = string.replaceAll("&8", "§8");
+		string = string.replaceAll("&9", "§9");
+		string = string.replaceAll("&a", "§a");
+		string = string.replaceAll("&b", "§b");
+		string = string.replaceAll("&c", "§c");
+		string = string.replaceAll("&d", "§d");
+		string = string.replaceAll("&e", "§e");
+		string = string.replaceAll("&f", "§f");
+		return string;
+	}
 
-	public void activateCommands() {
-		// TODO Auto-generated method stub
+	public void activateCommands(String name) {
+		List<String> commands = getConfig().getStringList("Optional.activation_commands");
+		String[] msg = commands.toArray(new String[] {});
+		for(String s: msg) {
+			s = colorizeText(s);
+			s = s.replaceAll("%p", name);
+			getServer().dispatchCommand(getServer().getConsoleSender(), s);
+		}
 		
 	}
 }

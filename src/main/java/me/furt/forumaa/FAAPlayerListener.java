@@ -25,7 +25,8 @@ public class FAAPlayerListener implements Listener {
 							if (plugin.checkAccount(player)) {
 								plugin.sendInfo(player,
 										"Forum Account Found. Activating...");
-								plugin.activateUser(player, "login");
+								if(plugin.activateUser(player))
+									plugin.activateCommands();
 							}
 						}
 					});

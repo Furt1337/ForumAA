@@ -10,13 +10,11 @@ import org.mcstats.Metrics;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ForumAA extends JavaPlugin {
 
 	private SQLQuery sqlDB = new SQLQuery(this);
 	private final FAAPlayerListener faPl = new FAAPlayerListener(this);
-	public static Logger log = Logger.getLogger("Minecraft");
 	public static Server server;
 	private String forumURL;
 
@@ -115,8 +113,9 @@ public class ForumAA extends JavaPlugin {
 		return check;
 	}
 
-	public void activateUser(Player player, String mode) {
+	public boolean activateUser(Player player) {
 		String name = player.getName();
+		boolean activated = false;
 		try {
 			// Check if user exists
 			if (sqlDB.checkExists(name)) {
@@ -124,25 +123,22 @@ public class ForumAA extends JavaPlugin {
 				if (!sqlDB.checkActivated(name)) {
 					// Save the user
 					if (sqlDB.forumType.equalsIgnoreCase("phpbb")) {
-						sqlDB.savePhpbbUser(name);
+						activated = sqlDB.savePhpbbUser(name);
 					} else if (sqlDB.forumType.equalsIgnoreCase("mybb")) {
-						sqlDB.saveMybbUser(name);
+						activated = sqlDB.saveMybbUser(name);
 					} else if (sqlDB.forumType.equalsIgnoreCase("xenforo")) {
-						sqlDB.saveXenforoUser(name);
+						activated = sqlDB.saveXenforoUser(name);
 					} else if (sqlDB.forumType.equalsIgnoreCase("ipb")) {
-						sqlDB.saveIpbUser(name);
+						activated = sqlDB.saveIpbUser(name);
 					} else if (sqlDB.forumType.equalsIgnoreCase("smf")) {
-						sqlDB.saveSmfUser(name);
-					}
-				} else {
-					if (!mode.equals("login")) {
-						sendError(player, "Account already activated");
+						activated = sqlDB.saveSmfUser(name);
 					}
 				}
 			} else {
 				sendError(player, "No account found. Go to " + forumURL
 						+ " to register");
 			}
+			return activated;
 		} catch (SQLException e) {
 			logError("SQL Error Occurred.");
 			e.printStackTrace();
@@ -150,6 +146,7 @@ public class ForumAA extends JavaPlugin {
 			logError("Could not find SQL Class.");
 			e.printStackTrace();
 		}
+		return activated;
 	}
 
 	public void checkFiles() {
@@ -165,9 +162,7 @@ public class ForumAA extends JavaPlugin {
 		getConfig().addDefault("Forum.Type", "phpbb");
 		getConfig().addDefault("Forum.URL", "http://forum.myserver.com");
 		getConfig().addDefault("Optional.Custom_Field_ID", "");
-		// getConfig().addDefault("Optional.Promote_User.enable", false);
-		// getConfig().addDefault("Optional.Promote_User.Post_Count", "0");
-		// getConfig().addDefault("Optional.Promote_User.rank", "Member");
+		getConfig().addDefault("Optional.activation_commands", "null");
 		getConfig().addDefault("Optional.Login_Activation", "false");
 		getConfig().options().copyDefaults(true);
 		saveConfig();
@@ -182,10 +177,15 @@ public class ForumAA extends JavaPlugin {
 	}
 
 	public void logInfo(String message) {
-		ForumAA.log.info("[ForumAA] " + message);
+		this.getLogger().info(message);
 	}
 
 	public void logError(String message) {
-		ForumAA.log.severe("[ForumAA] " + message);
+		this.getLogger().warning(message);
+	}
+
+	public void activateCommands() {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -100,7 +100,7 @@ public class SQLQuery {
 		return false;
 	}
 
-	public void savePhpbbUser(String user) throws SQLException,
+	public boolean savePhpbbUser(String user) throws SQLException,
 			ClassNotFoundException {
 		sqlClass();
 		sqlCon();
@@ -125,13 +125,16 @@ public class SQLQuery {
 					updateStats(rs.getInt("user_id"), rs.getString("username"),
 							rs.getString("user_colour"), rs.getInt("group_id"));
 					closeCon();
+					return true;
 				} else {
 					plugin.sendInfo(ForumAA.server.getPlayer(user),
 							"Account activated but could not update Stats");
+					return true;
 				}
 			} else {
 				plugin.sendError(ForumAA.server.getPlayer(user),
 						"Username could not be found");
+				return false;
 			}
 		} else {
 			// Update main users table
@@ -153,12 +156,14 @@ public class SQLQuery {
 				updateStats(rs.getInt("user_id"), rs.getString("username"),
 						rs.getString("user_colour"), rs.getInt("group_id"));
 				closeCon();
+				return true;
 			} else {
 				plugin.sendInfo(ForumAA.server.getPlayer(user),
 						"Account activated but could not update Stats");
+				closeCon();
+				return true;
 			}
 		}
-		closeCon();
 	}
 
 	private void updateStats(int id, String username, String user_colour,
@@ -191,7 +196,7 @@ public class SQLQuery {
 		closeCon();
 	}
 
-	public void saveMybbUser(String user) throws SQLException,
+	public boolean saveMybbUser(String user) throws SQLException,
 			ClassNotFoundException {
 		sqlClass();
 		sqlCon();
@@ -204,23 +209,29 @@ public class SQLQuery {
 						+ "users SET usergroup='2' WHERE uid='"
 						+ rs.getInt("ufid") + "'";
 				UPDATE(query);
+				closeCon();
 
 				query = "SELECT * FROM " + tablePref + "users WHERE uid="
 						+ rs.getInt("ufid") + " AND usergroup='2'";
 				rs = SELECT(query);
-				closeCon();
 				if (rs.next()) {
 					plugin.sendInfo(ForumAA.server.getPlayer(user),
 							"Account activated for " + rs.getString("username"));
+					closeCon();
+					return true;
 
 				} else {
 					plugin.sendError(ForumAA.server.getPlayer(user),
 							"Your account has not been activated");
+					closeCon();
+					return false;
 				}
 
 			} else {
 				plugin.sendError(ForumAA.server.getPlayer(user),
 						"Couldn't find your username");
+				closeCon();
+				return false;
 			}
 		} else {
 			query = "UPDATE " + tablePref
@@ -231,20 +242,22 @@ public class SQLQuery {
 			query = "SELECT * FROM " + tablePref + "users WHERE username='"
 					+ user + "' AND usergroup='2'";
 			ResultSet rs = SELECT(query);
-			closeCon();
 			if (rs.next()) {
 				plugin.sendInfo(ForumAA.server.getPlayer(user),
 						"Account activated for " + rs.getString("username"));
+				closeCon();
+				return true;
 
 			} else {
 				plugin.sendError(ForumAA.server.getPlayer(user),
 						"Your account has not been activated");
+				closeCon();
+				return false;
 			}
 		}
-		closeCon();
 	}
 
-	public void saveXenforoUser(String user) throws SQLException,
+	public boolean saveXenforoUser(String user) throws SQLException,
 			ClassNotFoundException {
 		sqlClass();
 		sqlCon();
@@ -257,25 +270,28 @@ public class SQLQuery {
 						+ "user SET user_state='valid' WHERE user_id='"
 						+ rs.getInt("user_id") + "'";
 				UPDATE(query);
-				/**
-				 * 
-				 */
+				closeCon();
+				
 				query = "SELECT * FROM " + tablePref + "user WHERE user_id="
 						+ rs.getInt("user_id") + " AND user_state='valid'";
 				rs = SELECT(query);
-				closeCon();
 				if (rs.next()) {
 					plugin.sendInfo(ForumAA.server.getPlayer(user),
 							"Account activated for " + rs.getString("username"));
+					return true;
 
 				} else {
 					plugin.sendError(ForumAA.server.getPlayer(user),
 							"Your account has not been activated");
+					closeCon();
+					return false;
 				}
 
 			} else {
 				plugin.sendError(ForumAA.server.getPlayer(user),
 						"Couldn't find your username");
+				closeCon();
+				return false;
 			}
 		} else {
 			query = "UPDATE " + tablePref
@@ -287,20 +303,22 @@ public class SQLQuery {
 			query = "SELECT * FROM " + tablePref + "user WHERE username='"
 					+ user + "' AND user_state='valid'";
 			ResultSet rs = SELECT(query);
-			closeCon();
 			if (rs.next()) {
 				plugin.sendInfo(ForumAA.server.getPlayer(user),
 						"Account activated for " + rs.getString("username"));
+				closeCon();
+				return true;
 
 			} else {
 				plugin.sendError(ForumAA.server.getPlayer(user),
 						"Your account has not been activated");
+				closeCon();
+				return false;
 			}
 		}
-		closeCon();
 	}
 
-	public void saveIpbUser(String user) throws ClassNotFoundException,
+	public boolean saveIpbUser(String user) throws ClassNotFoundException,
 			SQLException {
 		sqlClass();
 		sqlCon();
@@ -321,20 +339,26 @@ public class SQLQuery {
 						+ "members WHERE member_group_id='3' AND member_id="
 						+ rs.getInt("member_id");
 				rs = SELECT(query);
-				closeCon();
+				
 				if (rs.next()) {
 					plugin.sendInfo(
 							ForumAA.server.getPlayer(user),
 							"Account activated for "
 									+ rs.getString("members_display_name"));
+					closeCon();
+					return true;
 				} else {
 					plugin.sendError(ForumAA.server.getPlayer(user),
 							"Your account has not been activated");
+					closeCon();
+					return false;
 				}
 
 			} else {
 				plugin.sendError(ForumAA.server.getPlayer(user),
 						"Couldn't find your username");
+				closeCon();
+				return false;
 			}
 		} else {
 			query = "UPDATE "
@@ -342,30 +366,32 @@ public class SQLQuery {
 					+ "members SET member_group_id ='3' WHERE members_display_name='"
 					+ user + "'";
 			UPDATE(query);
-			/**
-			 * 
-			 */
+			closeCon();
+			
 			query = "SELECT * FROM " + tablePref
 					+ "members WHERE members_display_name='" + user
 					+ "' AND member_group_id='3'";
 			ResultSet rs = SELECT(query);
-			closeCon();
 			if (rs.next()) {
 				plugin.sendInfo(
 						ForumAA.server.getPlayer(user),
 						"Account activated for "
 								+ rs.getString("members_display_name"));
+				closeCon();
+				return true;
 
 			} else {
 				plugin.sendError(ForumAA.server.getPlayer(user),
 						"Your account has not been activated");
+				closeCon();
+				return false;
 			}
 		}
-		closeCon();
 	}
 
-	public void saveSmfUser(String user) throws ClassNotFoundException,
+	public boolean saveSmfUser(String user) throws ClassNotFoundException,
 			SQLException {
+		// SMF activation
 		sqlClass();
 		sqlCon();
 		if (!customField.isEmpty()) {
@@ -382,19 +408,25 @@ public class SQLQuery {
 						+ "members WHERE id_member=" + rs.getInt("id_member")
 						+ " AND is_activated='1'";
 				rs = SELECT(query);
-				closeCon();
+				
 				if (rs.next()) {
 					plugin.sendInfo(ForumAA.server.getPlayer(user),
 							"Account activated for " + rs.getString("username"));
+					closeCon();
+					return true;
 
 				} else {
 					plugin.sendError(ForumAA.server.getPlayer(user),
 							"Your account has not been activated");
+					closeCon();
+					return false;
 				}
 
 			} else {
 				plugin.sendError(ForumAA.server.getPlayer(user),
 						"Couldn't find your username");
+				closeCon();
+				return false;
 			}
 		} else {
 			query = "UPDATE " + tablePref
@@ -403,20 +435,23 @@ public class SQLQuery {
 			UPDATE(query);
 			closeCon();
 
-			query = "SELECT * FROM " + tablePref + "member WHERE member_name='"
+			query = "SELECT * FROM " + tablePref + "members WHERE member_name='"
 					+ user + "' AND is_activated='1'";
 			ResultSet rs = SELECT(query);
-			closeCon();
+			
 			if (rs.next()) {
 				plugin.sendInfo(ForumAA.server.getPlayer(user),
 						"Account activated for " + rs.getString("username"));
+				closeCon();
+				return true;
 
 			} else {
 				plugin.sendError(ForumAA.server.getPlayer(user),
 						"Your account has not been activated");
+				closeCon();
+				return false;
 			}
 		}
-		closeCon();
 	}
 
 	private String smfFieldValue() throws ClassNotFoundException, SQLException {

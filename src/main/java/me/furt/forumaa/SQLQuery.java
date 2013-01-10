@@ -209,8 +209,6 @@ public class SQLQuery {
 						+ "users SET usergroup='2' WHERE uid='"
 						+ rs.getInt("ufid") + "'";
 				UPDATE(query);
-				closeCon();
-
 				query = "SELECT * FROM " + tablePref + "users WHERE uid="
 						+ rs.getInt("ufid") + " AND usergroup='2'";
 				rs = SELECT(query);
@@ -237,8 +235,6 @@ public class SQLQuery {
 			query = "UPDATE " + tablePref
 					+ "users SET usergroup='2' WHERE username='" + user + "'";
 			UPDATE(query);
-			closeCon();
-
 			query = "SELECT * FROM " + tablePref + "users WHERE username='"
 					+ user + "' AND usergroup='2'";
 			ResultSet rs = SELECT(query);
@@ -270,8 +266,6 @@ public class SQLQuery {
 						+ "user SET user_state='valid' WHERE user_id='"
 						+ rs.getInt("user_id") + "'";
 				UPDATE(query);
-				closeCon();
-				
 				query = "SELECT * FROM " + tablePref + "user WHERE user_id="
 						+ rs.getInt("user_id") + " AND user_state='valid'";
 				rs = SELECT(query);
@@ -298,8 +292,6 @@ public class SQLQuery {
 					+ "user SET user_state='valid' WHERE username='" + user
 					+ "'";
 			UPDATE(query);
-			closeCon();
-
 			query = "SELECT * FROM " + tablePref + "user WHERE username='"
 					+ user + "' AND user_state='valid'";
 			ResultSet rs = SELECT(query);
@@ -332,9 +324,6 @@ public class SQLQuery {
 						+ "members SET member_group_id ='3' WHERE member_id='"
 						+ rs.getInt("member_id") + "'";
 				UPDATE(query);
-				/**
-				 * 
-				 */
 				query = "SELECT * FROM " + tablePref
 						+ "members WHERE member_group_id='3' AND member_id="
 						+ rs.getInt("member_id");
@@ -366,8 +355,6 @@ public class SQLQuery {
 					+ "members SET member_group_id ='3' WHERE members_display_name='"
 					+ user + "'";
 			UPDATE(query);
-			closeCon();
-			
 			query = "SELECT * FROM " + tablePref
 					+ "members WHERE members_display_name='" + user
 					+ "' AND member_group_id='3'";
@@ -433,8 +420,6 @@ public class SQLQuery {
 					+ "members SET is_activated='1' WHERE member_name='" + user
 					+ "'";
 			UPDATE(query);
-			closeCon();
-
 			query = "SELECT * FROM " + tablePref + "members WHERE member_name='"
 					+ user + "' AND is_activated='1'";
 			ResultSet rs = SELECT(query);

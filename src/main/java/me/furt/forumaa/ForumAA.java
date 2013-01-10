@@ -156,7 +156,7 @@ public class ForumAA extends JavaPlugin {
 			getDataFolder().mkdirs();
 		}
 		List<String> commands = new ArrayList<String>();
-		commands.add("say &4%p &9has successfully activated there forum account!");
+		commands.add("say &4%p &9has successfully activated their forum account!");
 		commands.add("say Just another test command!");
 		getConfig().addDefault("Database.URL", "localhost");
 		getConfig().addDefault("Database.Port", "3306");

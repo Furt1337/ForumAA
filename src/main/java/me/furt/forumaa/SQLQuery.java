@@ -214,7 +214,7 @@ public class SQLQuery {
 				rs = SELECT(query);
 				if (rs.next()) {
 					plugin.sendInfo(ForumAA.server.getPlayer(user),
-							"Account activated for " + rs.getString("username"));
+							"Your account has been activated.");
 					closeCon();
 					return true;
 
@@ -240,7 +240,7 @@ public class SQLQuery {
 			ResultSet rs = SELECT(query);
 			if (rs.next()) {
 				plugin.sendInfo(ForumAA.server.getPlayer(user),
-						"Account activated for " + rs.getString("username"));
+						"Your account has been activated.");
 				closeCon();
 				return true;
 
@@ -271,7 +271,7 @@ public class SQLQuery {
 				rs = SELECT(query);
 				if (rs.next()) {
 					plugin.sendInfo(ForumAA.server.getPlayer(user),
-							"Account activated for " + rs.getString("username"));
+							"Your account has been activated.");
 					return true;
 
 				} else {
@@ -297,7 +297,7 @@ public class SQLQuery {
 			ResultSet rs = SELECT(query);
 			if (rs.next()) {
 				plugin.sendInfo(ForumAA.server.getPlayer(user),
-						"Account activated for " + rs.getString("username"));
+						"Your account has been activated.");
 				closeCon();
 				return true;
 
@@ -332,8 +332,7 @@ public class SQLQuery {
 				if (rs.next()) {
 					plugin.sendInfo(
 							ForumAA.server.getPlayer(user),
-							"Account activated for "
-									+ rs.getString("members_display_name"));
+							"Your account has been activated.");
 					closeCon();
 					return true;
 				} else {
@@ -362,8 +361,7 @@ public class SQLQuery {
 			if (rs.next()) {
 				plugin.sendInfo(
 						ForumAA.server.getPlayer(user),
-						"Account activated for "
-								+ rs.getString("members_display_name"));
+						"Your account has been activated.");
 				closeCon();
 				return true;
 
@@ -398,7 +396,7 @@ public class SQLQuery {
 				
 				if (rs.next()) {
 					plugin.sendInfo(ForumAA.server.getPlayer(user),
-							"Account activated for " + rs.getString("username"));
+							"Your account has been activated.");
 					closeCon();
 					return true;
 
@@ -426,7 +424,7 @@ public class SQLQuery {
 			
 			if (rs.next()) {
 				plugin.sendInfo(ForumAA.server.getPlayer(user),
-						"Account activated for " + rs.getString("username"));
+						"Your account has been activated.");
 				closeCon();
 				return true;
 

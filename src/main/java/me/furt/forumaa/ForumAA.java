@@ -39,65 +39,71 @@ public class ForumAA extends JavaPlugin {
 		this.sqlDB.database = getConfig().getString("Database.Database");
 		this.sqlDB.customField = getConfig().getString(
 				"Optional.Custom_Field_ID");
+		this.sqlDB.forumType = getConfig().getString("Forum.Type");
 		this.forumURL = getConfig().getString("Forum.URL");
 
-		if (getConfig().getString("Forum.Type").equalsIgnoreCase("phpbb")) {
-			this.sqlDB.forumType = getConfig().getString("Forum.Type");
-		} else if (getConfig().getString("Forum.Type").equalsIgnoreCase("mybb")) {
-			this.sqlDB.forumType = getConfig().getString("Forum.Type");
-		} else if (getConfig().getString("Forum.Type").equalsIgnoreCase("ipb")) {
-			this.sqlDB.forumType = getConfig().getString("Forum.Type");
-		} else if (getConfig().getString("Forum.Type").equalsIgnoreCase("smf")) {
-			this.sqlDB.forumType = getConfig().getString("Forum.Type");
-		} else if (getConfig().getString("Forum.Type").equalsIgnoreCase(
-				"xenforo")) {
-			this.sqlDB.forumType = getConfig().getString("Forum.Type");
-		} else {
+		if (!sqlDB.forumType.equalsIgnoreCase("phpbb")
+				|| !sqlDB.forumType.equalsIgnoreCase("mybb")
+				|| !sqlDB.forumType.equalsIgnoreCase("ipb")
+				|| !sqlDB.forumType.equalsIgnoreCase("smf")) {
 			errorMsg = getConfig().getString("Forum.Type")
 					+ " is not a valid forum type! Make sure config.yml is setup properly.";
 			setEnabled(false);
+			this.sqlDB.forumType = null;
 		}
 
 		if (errorMsg == null) {
-			try {
-				if (this.sqlDB.sqlCon() != null) {
-					if (this.sqlDB.checkTables()) {
-						if (!this.sqlDB.customField.isEmpty()) {
-							if (this.sqlDB.checkCustomColumn()) {
-								logInfo("Database connected. Custom Field OK.");
-								return;
-							}
+			getServer().getScheduler().runTaskAsynchronously(this,
+					new Runnable() {
+						public void run() {
+							setEnabled(checkSql());
 
-							logInfo("Cannot find custom field. Make sure config.yml is setup properly.");
-							setEnabled(false);
-							return;
 						}
-
-						logInfo("Database connected.");
-						return;
-					}
-
-					logInfo("Could not connect to Users table. Make sure config.yml is setup properly.");
-					setEnabled(false);
-					return;
-				}
-			} catch (SQLException e) {
-				logError("Could not connect to database! Make sure config.yml is setup properly.");
-				setEnabled(false);
-			} catch (ClassNotFoundException e) {
-				logError("Could not connect to database! Make sure config.yml is setup properly.");
-				setEnabled(false);
-			}
+					});
 		} else {
 			logError(errorMsg);
 			setEnabled(false);
 		}
-		
+
 		try {
-		    Metrics metrics = new Metrics(this);
-		    metrics.start();
+			Metrics metrics = new Metrics(this);
+			metrics.start();
 		} catch (IOException e) {
-		   this.getLogger().log(Level.WARNING, "PluginMetrics could not start.");
+			this.getLogger().log(Level.WARNING,
+					"PluginMetrics could not start.");
+		}
+	}
+
+	public boolean checkSql() {
+		try {
+			if (this.sqlDB.sqlCon() != null) {
+				if (this.sqlDB.checkTables()) {
+					if (!this.sqlDB.customField.isEmpty()) {
+						if (this.sqlDB.checkCustomColumn()) {
+							logInfo("Database connected. Custom Field OK.");
+							return true;
+						}
+
+						logInfo("Cannot find custom field. Make sure config.yml is setup properly.");
+						return false;
+					}
+
+					logInfo("Database connected.");
+					return true;
+				}
+
+				logInfo("Could not connect to Users table. Make sure config.yml is setup properly.");
+				return false;
+			} else {
+				return false;
+			}
+
+		} catch (SQLException e) {
+			logError("Could not connect to database! Make sure config.yml is setup properly.");
+			return false;
+		} catch (ClassNotFoundException e) {
+			logError("Could not connect to database! Make sure config.yml is setup properly.");
+			return false;
 		}
 	}
 
@@ -188,7 +194,7 @@ public class ForumAA extends JavaPlugin {
 	public void logError(String message) {
 		this.getLogger().warning(message);
 	}
-	
+
 	public String colorizeText(String string) {
 		string = string.replaceAll("&0", "§0");
 		string = string.replaceAll("&1", "§1");
@@ -210,13 +216,14 @@ public class ForumAA extends JavaPlugin {
 	}
 
 	public void activateCommands(String name) {
-		List<String> commands = getConfig().getStringList("Optional.activation_commands");
+		List<String> commands = getConfig().getStringList(
+				"Optional.activation_commands");
 		String[] msg = commands.toArray(new String[] {});
-		for(String s: msg) {
+		for (String s : msg) {
 			s = colorizeText(s);
 			s = s.replaceAll("%p", name);
 			getServer().dispatchCommand(getServer().getConsoleSender(), s);
 		}
-		
+
 	}
 }

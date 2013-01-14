@@ -39,17 +39,18 @@ public class ForumAA extends JavaPlugin {
 		this.sqlDB.database = getConfig().getString("Database.Database");
 		this.sqlDB.customField = getConfig().getString(
 				"Optional.Custom_Field_ID");
-		this.sqlDB.forumType = getConfig().getString("Forum.Type");
 		this.forumURL = getConfig().getString("Forum.URL");
 
-		if (!sqlDB.forumType.equalsIgnoreCase("phpbb")
-				|| !sqlDB.forumType.equalsIgnoreCase("mybb")
-				|| !sqlDB.forumType.equalsIgnoreCase("ipb")
-				|| !sqlDB.forumType.equalsIgnoreCase("smf")) {
+		if (getConfig().getString("Forum.Type").equalsIgnoreCase("phpbb")
+				|| getConfig().getString("Forum.Type").equalsIgnoreCase("mybb")
+				|| getConfig().getString("Forum.Type").equalsIgnoreCase("ipb")
+				|| getConfig().getString("Forum.Type").equalsIgnoreCase("smf")
+				|| getConfig().getString("Forum.Type").equalsIgnoreCase("xenforo")) {
+			this.sqlDB.forumType = getConfig().getString("Forum.Type");
+		} else {
 			errorMsg = getConfig().getString("Forum.Type")
 					+ " is not a valid forum type! Make sure config.yml is setup properly.";
 			setEnabled(false);
-			this.sqlDB.forumType = null;
 		}
 
 		if (errorMsg == null) {

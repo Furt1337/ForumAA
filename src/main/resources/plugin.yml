@@ -1,7 +1,7 @@
 name: ForumAA
 main: me.furt.forumaa.ForumAA
 version: 3.0.0
-author: TheKris1234, furt
+authors: [furt, TheKris1234]
 commands:
   account:
     description: Activates forum account.

@@ -232,7 +232,9 @@ public class ForumAA extends JavaPlugin {
 	public boolean checkActivated(Player player) {
 		try {
 			return this.sqlDB.checkActivated(player.getName());
-		} catch (ClassNotFoundException | SQLException e) {
+		} catch (ClassNotFoundException c) {
+			return false;
+		} catch (SQLException e) {
 			return false;
 		}
 	}

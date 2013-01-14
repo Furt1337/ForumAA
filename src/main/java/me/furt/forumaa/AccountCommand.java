@@ -22,7 +22,7 @@ public class AccountCommand implements CommandExecutor {
 				plugin.getServer().getScheduler()
 						.runTaskAsynchronously(plugin, new Runnable() {
 							public void run() {
-								if(plugin.activateUser(player))
+								if (plugin.activateUser(player))
 									plugin.activateCommands(player.getName());
 							}
 

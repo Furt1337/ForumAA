@@ -45,7 +45,8 @@ public class ForumAA extends JavaPlugin {
 				|| getConfig().getString("Forum.Type").equalsIgnoreCase("mybb")
 				|| getConfig().getString("Forum.Type").equalsIgnoreCase("ipb")
 				|| getConfig().getString("Forum.Type").equalsIgnoreCase("smf")
-				|| getConfig().getString("Forum.Type").equalsIgnoreCase("xenforo")) {
+				|| getConfig().getString("Forum.Type").equalsIgnoreCase(
+						"xenforo")) {
 			this.sqlDB.forumType = getConfig().getString("Forum.Type");
 		} else {
 			errorMsg = getConfig().getString("Forum.Type")
@@ -226,5 +227,13 @@ public class ForumAA extends JavaPlugin {
 			getServer().dispatchCommand(getServer().getConsoleSender(), s);
 		}
 
+	}
+
+	public boolean checkActivated(Player player) {
+		try {
+			return this.sqlDB.checkActivated(player.getName());
+		} catch (ClassNotFoundException | SQLException e) {
+			return false;
+		}
 	}
 }

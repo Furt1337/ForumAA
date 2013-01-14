@@ -328,10 +328,9 @@ public class SQLQuery {
 						+ "members WHERE member_group_id='3' AND member_id="
 						+ rs.getInt("member_id");
 				rs = SELECT(query);
-				
+
 				if (rs.next()) {
-					plugin.sendInfo(
-							ForumAA.server.getPlayer(user),
+					plugin.sendInfo(ForumAA.server.getPlayer(user),
 							"Your account has been activated.");
 					closeCon();
 					return true;
@@ -359,8 +358,7 @@ public class SQLQuery {
 					+ "' AND member_group_id='3'";
 			ResultSet rs = SELECT(query);
 			if (rs.next()) {
-				plugin.sendInfo(
-						ForumAA.server.getPlayer(user),
+				plugin.sendInfo(ForumAA.server.getPlayer(user),
 						"Your account has been activated.");
 				closeCon();
 				return true;
@@ -393,7 +391,7 @@ public class SQLQuery {
 						+ "members WHERE id_member=" + rs.getInt("id_member")
 						+ " AND is_activated='1'";
 				rs = SELECT(query);
-				
+
 				if (rs.next()) {
 					plugin.sendInfo(ForumAA.server.getPlayer(user),
 							"Your account has been activated.");
@@ -418,10 +416,11 @@ public class SQLQuery {
 					+ "members SET is_activated='1' WHERE member_name='" + user
 					+ "'";
 			UPDATE(query);
-			query = "SELECT * FROM " + tablePref + "members WHERE member_name='"
-					+ user + "' AND is_activated='1'";
+			query = "SELECT * FROM " + tablePref
+					+ "members WHERE member_name='" + user
+					+ "' AND is_activated='1'";
 			ResultSet rs = SELECT(query);
-			
+
 			if (rs.next()) {
 				plugin.sendInfo(ForumAA.server.getPlayer(user),
 						"Your account has been activated.");
@@ -457,15 +456,15 @@ public class SQLQuery {
 						+ "profile_fields_data WHERE pf_" + customField + "='"
 						+ userC + "'";
 			}
-			query = "SELECT * FROM " + tablePref + "users WHERE username='" + userC
-					+ "'";
+			query = "SELECT * FROM " + tablePref + "users WHERE username='"
+					+ userC + "'";
 		} else if (forumType.equalsIgnoreCase("mybb")) {
 			if (!customField.isEmpty()) {
 				query = "SELECT * FROM " + tablePref + "userfields WHERE fid"
 						+ customField + "='" + userC + "'";
 			}
-			query = "SELECT * FROM " + tablePref + "users WHERE username='" + userC
-					+ "'";
+			query = "SELECT * FROM " + tablePref + "users WHERE username='"
+					+ userC + "'";
 		} else if (forumType.equalsIgnoreCase("xenforo")) {
 			if (!customField.isEmpty()) {
 				query = "SELECT * FROM " + tablePref

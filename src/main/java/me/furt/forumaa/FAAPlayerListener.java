@@ -23,10 +23,13 @@ public class FAAPlayerListener implements Listener {
 					.runTaskAsynchronously(plugin, new Runnable() {
 						public void run() {
 							if (plugin.checkAccount(player)) {
-								plugin.sendInfo(player,
-										"Forum Account Found. Activating...");
-								if(plugin.activateUser(player))
-									plugin.activateCommands(player.getName());
+								if (!plugin.checkActivated(player)) {
+									plugin.sendInfo(player,
+											"Forum Account Found. Activating...");
+									if (plugin.activateUser(player))
+										plugin.activateCommands(player
+												.getName());
+								}
 							}
 						}
 					});

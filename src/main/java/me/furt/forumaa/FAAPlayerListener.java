@@ -18,7 +18,6 @@ public class FAAPlayerListener implements Listener {
 
 		final Player player = event.getPlayer();
 		if (plugin.getConfig().getBoolean("Optional.Login_Activation")) {
-
 			plugin.getServer().getScheduler()
 					.runTaskAsynchronously(plugin, new Runnable() {
 						public void run() {

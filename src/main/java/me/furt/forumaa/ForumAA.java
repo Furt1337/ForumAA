@@ -170,13 +170,13 @@ public class ForumAA extends JavaPlugin {
 		getConfig().addDefault("Database.Port", "3306");
 		getConfig().addDefault("Database.Username", "root");
 		getConfig().addDefault("Database.Password", "password");
-		getConfig().addDefault("Database.Database", "phpBB");
-		getConfig().addDefault("Database.Table_Prefix", "phpbb_");
-		getConfig().addDefault("Forum.Type", "phpbb");
+		getConfig().addDefault("Database.Database", "smf");
+		getConfig().addDefault("Database.Table_Prefix", "smf_");
+		getConfig().addDefault("Forum.Type", "smf");
 		getConfig().addDefault("Forum.URL", "http://forum.myserver.com");
 		getConfig().addDefault("Optional.Custom_Field_ID", "");
 		getConfig().addDefault("Optional.activation_commands", commands);
-		getConfig().addDefault("Optional.Login_Activation", "false");
+		getConfig().addDefault("Optional.Login_Activation", false);
 		getConfig().options().copyDefaults(true);
 		saveConfig();
 	}

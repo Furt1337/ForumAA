@@ -1,4 +1,4 @@
-package me.furt.forumaa;
+package me.furt.forumaa.forums;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -8,6 +8,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import me.furt.forumaa.ForumAA;
+@Deprecated
 public class SQLQuery {
 
 	// Initialize database variables

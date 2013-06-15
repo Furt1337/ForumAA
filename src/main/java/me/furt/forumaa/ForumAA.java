@@ -1,5 +1,11 @@
 package me.furt.forumaa;
 
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import me.furt.forumaa.forums.ForumHandler;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -7,81 +13,128 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-
 public class ForumAA extends JavaPlugin {
-
-	private SQLQuery sqlDB = new SQLQuery(this);
-	private final FAAPlayerListener faPl = new FAAPlayerListener(this);
+	public ForumHandler handler;
 	public static Server server;
-	private String forumURL;
-
-	public void onDisable() {
-		logInfo("Disabled");
-	}
 
 	public void onEnable() {
 		checkFiles();
 		PluginManager pm = getServer().getPluginManager();
-		pm.registerEvents(this.faPl, this);
+		pm.registerEvents(new FAAPlayerListener(this), this);
 		getCommand("account").setExecutor(new AccountCommand(this));
-		String errorMsg = null;
 		server = getServer();
-		this.sqlDB.url = getConfig().getString("Database.URL");
-		this.sqlDB.port = getConfig().getString("Database.Port");
-		this.sqlDB.username = getConfig().getString("Database.Username");
-		this.sqlDB.password = getConfig().getString("Database.Password");
-		this.sqlDB.tablePref = getConfig().getString("Database.Table_Prefix");
-		this.sqlDB.database = getConfig().getString("Database.Database");
-		this.sqlDB.customField = getConfig().getString(
-				"Optional.Custom_Field_ID");
-		this.forumURL = getConfig().getString("Forum.URL");
-
-		if (getConfig().getString("Forum.Type").equalsIgnoreCase("phpbb")
-				|| getConfig().getString("Forum.Type").equalsIgnoreCase("mybb")
-				|| getConfig().getString("Forum.Type").equalsIgnoreCase("ipb")
-				|| getConfig().getString("Forum.Type").equalsIgnoreCase("smf")
-				|| getConfig().getString("Forum.Type").equalsIgnoreCase(
-						"xenforo")) {
-			this.sqlDB.forumType = getConfig().getString("Forum.Type");
-		} else {
-			errorMsg = getConfig().getString("Forum.Type")
-					+ " is not a valid forum type! Make sure config.yml is setup properly.";
+		Class<? extends ForumHandler> fh = null;
+		try {
+			fh = Class.forName(getConfig().getString("Forum.Type")).asSubclass(
+					ForumHandler.class);
+		} catch (ClassNotFoundException e1) {
+			logError(getConfig().getString("Forum.Type")
+					+ " is not a valid forum type! Make sure config.yml is setup properly.");
 			setEnabled(false);
 		}
-
-		if (errorMsg == null) {
-			getServer().getScheduler().runTaskAsynchronously(this,
-					new Runnable() {
-						public void run() {
-							setEnabled(checkSql());
-
-						}
-					});
-		} else {
-			logError(errorMsg);
+		try {
+			handler = fh.newInstance();
+		} catch (InstantiationException | IllegalAccessException e1) {
+			logError(getConfig().getString("Forum.Type")
+					+ " is not a valid forum type! Make sure config.yml is setup properly.");
 			setEnabled(false);
 		}
+		handler.url = getConfig().getString("Database.URL");
+		handler.port = getConfig().getString("Database.Port");
+		handler.username = getConfig().getString("Database.Username");
+		handler.password = getConfig().getString("Database.Password");
+		handler.tablePref = getConfig().getString("Database.Table_Prefix");
+		handler.database = getConfig().getString("Database.Database");
+		handler.customField = getConfig().getString("Optional.Custom_Field_ID");
+
+		getServer().getScheduler().runTaskAsynchronously(this, new Runnable() {
+			public void run() {
+				setEnabled(checkSql());
+			}
+		});
 
 		try {
 			Metrics metrics = new Metrics(this);
 			metrics.start();
 		} catch (IOException e) {
-			this.getLogger().log(Level.WARNING,
-					"PluginMetrics could not start.");
+			logInfo("PluginMetrics could not start.");
 		}
+	}
+
+	public void onDisable() {
+		logInfo("Disabled");
+	}
+
+	public void activateCommands(String name) {
+		List<String> commands = getConfig().getStringList(
+				"Optional.activation_commands");
+		String[] msg = commands.toArray(new String[] {});
+		for (String s : msg) {
+			s = colorizeText(s);
+			s = s.replaceAll("%p", name);
+			getServer().dispatchCommand(getServer().getConsoleSender(), s);
+		}
+	}
+
+	public boolean activateUser(Player p) {
+		return false;
+
+	}
+
+	public boolean checkAccount(Player player) {
+		boolean check = false;
+		try {
+			if (handler.checkExists(player.getName())) {
+				check = true;
+			}
+		} catch (SQLException e) {
+			return check;
+		} catch (ClassNotFoundException e) {
+			return check;
+		}
+		return check;
+
+	}
+
+	public boolean checkActivated(Player player) {
+		try {
+			return handler.checkActivated(player.getName());
+		} catch (ClassNotFoundException c) {
+			return false;
+		} catch (SQLException e) {
+			return false;
+		}
+
+	}
+
+	public void checkFiles() {
+		if (!getDataFolder().exists()) {
+			getDataFolder().mkdirs();
+		}
+		List<String> commands = new ArrayList<String>();
+		commands.add("say &4%p &9has successfully activated their forum account!");
+		commands.add("say Just another test command!");
+		getConfig().addDefault("Database.URL", "localhost");
+		getConfig().addDefault("Database.Port", "3306");
+		getConfig().addDefault("Database.Username", "root");
+		getConfig().addDefault("Database.Password", "password");
+		getConfig().addDefault("Database.Database", "smf");
+		getConfig().addDefault("Database.Table_Prefix", "smf_");
+		getConfig().addDefault("Forum.Type", "smf");
+		getConfig().addDefault("Forum.URL", "http://forum.myserver.com");
+		getConfig().addDefault("Optional.Custom_Field_ID", "");
+		getConfig().addDefault("Optional.activation_commands", commands);
+		getConfig().addDefault("Optional.Login_Activation", false);
+		getConfig().options().copyDefaults(true);
+		saveConfig();
 	}
 
 	public boolean checkSql() {
 		try {
-			if (this.sqlDB.sqlCon() != null) {
-				if (this.sqlDB.checkTables()) {
-					if (!this.sqlDB.customField.isEmpty()) {
-						if (this.sqlDB.checkCustomColumn()) {
+			if (handler.sqlCon() != null) {
+				if (handler.checkTables()) {
+					if (!handler.customField.isEmpty()) {
+						if (handler.checkCustomField()) {
 							logInfo("Database connected. Custom Field OK.");
 							return true;
 						}
@@ -107,94 +160,7 @@ public class ForumAA extends JavaPlugin {
 			logError("Could not connect to database! Make sure config.yml is setup properly.");
 			return false;
 		}
-	}
 
-	public boolean checkAccount(Player player) {
-		boolean check = false;
-		try {
-			if (sqlDB.checkExists(player.getName())) {
-				check = true;
-			}
-		} catch (SQLException e) {
-			return check;
-		} catch (ClassNotFoundException e) {
-			return check;
-		}
-		return check;
-	}
-
-	public boolean activateUser(Player player) {
-		String name = player.getName();
-		boolean activated = false;
-		try {
-			// Check if user exists
-			if (sqlDB.checkExists(name)) {
-				// Check if user is already activated
-				if (!sqlDB.checkActivated(name)) {
-					// Save the user
-					if (sqlDB.forumType.equalsIgnoreCase("phpbb")) {
-						activated = sqlDB.savePhpbbUser(name);
-					} else if (sqlDB.forumType.equalsIgnoreCase("mybb")) {
-						activated = sqlDB.saveMybbUser(name);
-					} else if (sqlDB.forumType.equalsIgnoreCase("xenforo")) {
-						activated = sqlDB.saveXenforoUser(name);
-					} else if (sqlDB.forumType.equalsIgnoreCase("ipb")) {
-						activated = sqlDB.saveIpbUser(name);
-					} else if (sqlDB.forumType.equalsIgnoreCase("smf")) {
-						activated = sqlDB.saveSmfUser(name);
-					}
-				}
-			} else {
-				sendError(player, "No account found. Go to " + forumURL
-						+ " to register");
-			}
-			return activated;
-		} catch (SQLException e) {
-			logError("SQL Error Occurred.");
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			logError("Could not find SQL Class.");
-			e.printStackTrace();
-		}
-		return activated;
-	}
-
-	public void checkFiles() {
-		if (!getDataFolder().exists()) {
-			getDataFolder().mkdirs();
-		}
-		List<String> commands = new ArrayList<String>();
-		commands.add("say &4%p &9has successfully activated their forum account!");
-		commands.add("say Just another test command!");
-		getConfig().addDefault("Database.URL", "localhost");
-		getConfig().addDefault("Database.Port", "3306");
-		getConfig().addDefault("Database.Username", "root");
-		getConfig().addDefault("Database.Password", "password");
-		getConfig().addDefault("Database.Database", "smf");
-		getConfig().addDefault("Database.Table_Prefix", "smf_");
-		getConfig().addDefault("Forum.Type", "smf");
-		getConfig().addDefault("Forum.URL", "http://forum.myserver.com");
-		getConfig().addDefault("Optional.Custom_Field_ID", "");
-		getConfig().addDefault("Optional.activation_commands", commands);
-		getConfig().addDefault("Optional.Login_Activation", false);
-		getConfig().options().copyDefaults(true);
-		saveConfig();
-	}
-
-	public void sendInfo(Player player, String message) {
-		player.sendMessage(ChatColor.DARK_GREEN + "[ForumAA] " + message);
-	}
-
-	public void sendError(Player player, String message) {
-		player.sendMessage(ChatColor.RED + "[ForumAA] " + message);
-	}
-
-	public void logInfo(String message) {
-		this.getLogger().info(message);
-	}
-
-	public void logError(String message) {
-		this.getLogger().warning(message);
 	}
 
 	public String colorizeText(String string) {
@@ -217,25 +183,20 @@ public class ForumAA extends JavaPlugin {
 		return string;
 	}
 
-	public void activateCommands(String name) {
-		List<String> commands = getConfig().getStringList(
-				"Optional.activation_commands");
-		String[] msg = commands.toArray(new String[] {});
-		for (String s : msg) {
-			s = colorizeText(s);
-			s = s.replaceAll("%p", name);
-			getServer().dispatchCommand(getServer().getConsoleSender(), s);
-		}
-
+	public void sendInfo(Player player, String message) {
+		player.sendMessage(ChatColor.DARK_GREEN + "[ForumAA] " + message);
 	}
 
-	public boolean checkActivated(Player player) {
-		try {
-			return this.sqlDB.checkActivated(player.getName());
-		} catch (ClassNotFoundException c) {
-			return false;
-		} catch (SQLException e) {
-			return false;
-		}
+	public void sendError(Player player, String message) {
+		player.sendMessage(ChatColor.RED + "[ForumAA] " + message);
 	}
+
+	public void logInfo(String message) {
+		this.getLogger().info(message);
+	}
+
+	public void logError(String message) {
+		this.getLogger().warning(message);
+	}
+
 }

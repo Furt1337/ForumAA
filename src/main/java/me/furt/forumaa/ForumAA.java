@@ -34,7 +34,11 @@ public class ForumAA extends JavaPlugin {
 		}
 		try {
 			handler = fh.newInstance();
-		} catch (InstantiationException | IllegalAccessException e1) {
+		} catch (InstantiationException e1) {
+			logError(getConfig().getString("Forum.Type")
+					+ " is not a valid forum type! Make sure config.yml is setup properly.");
+			setEnabled(false);
+		} catch (IllegalAccessException e) {
 			logError(getConfig().getString("Forum.Type")
 					+ " is not a valid forum type! Make sure config.yml is setup properly.");
 			setEnabled(false);
